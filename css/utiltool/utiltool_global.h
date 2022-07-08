@@ -1,0 +1,12 @@
+#ifndef UTILTOOL_GLOBAL_H
+#define UTILTOOL_GLOBAL_H
+
+#include <QtCore/qglobal.h>
+
+#if defined(UTILTOOL_LIBRARY)
+#  define UTILTOOLSHARED_EXPORT Q_DECL_EXPORT
+#else
+#  define UTILTOOLSHARED_EXPORT Q_DECL_IMPORT
+#endif
+
+#endif // UTILTOOL_GLOBAL_H

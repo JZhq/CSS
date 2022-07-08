@@ -1,0 +1,8 @@
+INCLUDEPATH += $$PWD/../public
+
+CONFIG(debug, debug|release) {
+    LIBS += -L$$DLL_DIR_DEBUG -lglobald
+}
+CONFIG(release, debug|release) {
+    LIBS += -L$$DLL_DIR_RELEASE -lglobal
+}

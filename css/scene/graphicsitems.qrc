@@ -1,0 +1,17 @@
+<RCC>
+    <qresource prefix="/">
+        <file>resources/big_p.png</file>
+        <file>resources/camera_n.png</file>
+        <file>resources/small_p.png</file>
+        <file>resources/redo.png</file>
+        <file>resources/undo.png</file>
+        <file>resources/align_bottom.png</file>
+        <file>resources/align_hor_center.png</file>
+        <file>resources/align_left.png</file>
+        <file>resources/align_right.png</file>
+        <file>resources/align_top.png</file>
+        <file>resources/align_ver_center.png</file>
+        <file>resources/spacing_avr_hor.png</file>
+        <file>resources/spacing_avr_ver.png</file>
+    </qresource>
+</RCC>

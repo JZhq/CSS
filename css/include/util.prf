@@ -1,0 +1,8 @@
+INCLUDEPATH += $$PWD/../util
+
+CONFIG(debug, debug|release) {
+    LIBS += -L$$USER_DLL_DIR_DEBUG -lutild
+}
+CONFIG(release, debug|release) {
+    LIBS += -L$$USER_DLL_DIR_RELEASE -lutil
+}

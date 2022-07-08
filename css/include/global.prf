@@ -1,0 +1,28 @@
+#define the global vari
+INCLUDE_DIR = $$PWD
+
+LIB_DIR = $$PWD/../lib
+DATA_DIR = $$PWD/../bin/data
+
+INCLUDEPATH += $$INCLUDE_DIR
+
+THIRD_PARTY = $${PWD}/../../3rdparty
+
+
+BIN_DIR_DEBUG = $$PWD/../bin/debug
+DLL_DIR_DEBUG = $$PWD/../bin/debug
+SYS_DIR_DEBUG = $$PWD/../bin/debug
+SRC_DIR_DEBUG = $$PWD/../bin/debug/src
+USER_DLL_DIR_DEBUG = $$PWD/../bin/debug
+SYS_DLL_DIR_DEBUG = $$PWD/../bin/debug
+
+BIN_DIR_RELEASE = $$PWD/../bin/release
+DLL_DIR_RELEASE = $$PWD/../bin/release
+SYS_DIR_RELEASE = $$PWD/../bin/release
+SRC_DIR_RELEASE = $$PWD/../bin/release/src
+USER_DLL_DIR_RELEASE = $$PWD/../bin/release
+SYS_DLL_DIR_RELEASE = $$PWD/../bin/release
+
+
+win32-msvc*:QMAKE_CXXFLAGS += /wd"4819"
+

@@ -1,0 +1,12 @@
+#ifndef COMMONMODULE_GLOBAL_H
+#define COMMONMODULE_GLOBAL_H
+
+#include <QtCore/qglobal.h>
+
+#if defined(COMMONMODULE_LIBRARY)
+#  define GLOBAL_EXPORT Q_DECL_EXPORT
+#else
+#  define GLOBAL_EXPORT Q_DECL_IMPORT
+#endif
+
+#endif // COMMONMODULE_GLOBAL_H

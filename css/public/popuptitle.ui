@@ -1,0 +1,244 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>PopupTitle</class>
+ <widget class="QWidget" name="PopupTitle">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>678</width>
+    <height>64</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">#titleBar {
+    background: rgb(24, 35, 62);
+    border-top-left-radius: 3px;
+    border-top-right-radius: 3px;
+}
+#titleBar #titleLabel {
+	color:#fff;
+}
+#titleBar QPushButton  {
+    border: none;
+    min-width: 25px;
+    max-width: 25px;
+    min-height: 27px;
+    max-height: 27px;
+    padding: 0;
+    margin: 0;
+    border-width: 0 0 0 0;
+}
+
+#titleBar #minButton {
+    border-image: url(://images/min.png) 0 0 0 0 stretch stretch;
+    background:#FFFFFF;
+}
+#titleBar #minButton:hover {
+	color:#E7ECF0;
+	border:0px solid #738393;
+	background:rgb(0, 100, 200);
+}
+#titleBar #minButton:pressed {
+    background: #a0c5dd;
+}
+
+#titleBar #maxButton {
+    border-image: url(://images/max.png) 0 0 0 0 stretch stretch;
+    background:#FFFFFF;
+}
+#titleBar #maxButton:hover {
+      color:#E7ECF0;
+	  border:0px solid #738393;
+	  background:rgb(0, 100, 200);
+}
+
+#titleBar #maxButton:pressed {
+    background: rgb(202,202,203,50);
+}
+
+#titleBar #restoreButton {
+    border-image: url(://images/restore.png) 0 0 0 0 stretch stretch;
+    background:#FFFFFF;
+}
+#titleBar #restoreButton:hover {
+    color:#E7ECF0;
+	border:0px solid #738393;
+	background:rgb(0, 100, 200);
+}
+
+#titleBar #restoreButton:pressed {
+    background: rgb(202,202,203,50);
+}
+
+#titleBar #closeButton {
+	image: url(:/images/close.png) ;
+    background:#FFFFFF;
+}
+#titleBar #closeButton:hover {
+  	color:#E7ECF0;
+	border:0px solid #738393;
+	background:#E81123;
+}
+
+#titleBar #closeButton:pressed {
+    background: rgb(37,75,205, 50);
+}</string>
+  </property>
+  <layout class="QGridLayout" name="gridLayout">
+   <property name="leftMargin">
+    <number>0</number>
+   </property>
+   <property name="topMargin">
+    <number>0</number>
+   </property>
+   <property name="rightMargin">
+    <number>0</number>
+   </property>
+   <property name="bottomMargin">
+    <number>0</number>
+   </property>
+   <item row="0" column="0">
+    <widget class="QWidget" name="titleBar" native="true">
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>40</height>
+      </size>
+     </property>
+     <property name="styleSheet">
+      <string notr="true"/>
+     </property>
+     <layout class="QHBoxLayout" name="horizontalLayout">
+      <property name="spacing">
+       <number>3</number>
+      </property>
+      <property name="leftMargin">
+       <number>0</number>
+      </property>
+      <property name="topMargin">
+       <number>0</number>
+      </property>
+      <property name="rightMargin">
+       <number>8</number>
+      </property>
+      <property name="bottomMargin">
+       <number>0</number>
+      </property>
+      <item>
+       <spacer name="horizontalSpacer">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeType">
+         <enum>QSizePolicy::Fixed</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>15</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item>
+       <widget class="QLabel" name="iconLabel">
+        <property name="minimumSize">
+         <size>
+          <width>25</width>
+          <height>27</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>25</width>
+          <height>27</height>
+         </size>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">image: url(:/images/toolbar-restore.png);</string>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="titleLabel">
+        <property name="font">
+         <font>
+          <pointsize>18</pointsize>
+         </font>
+        </property>
+        <property name="text">
+         <string>标题</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <spacer name="horizontalSpacer_2">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>481</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item>
+       <widget class="QPushButton" name="minButton">
+        <property name="text">
+         <string/>
+        </property>
+        <property name="flat">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="restoreButton">
+        <property name="text">
+         <string/>
+        </property>
+        <property name="flat">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="maxButton">
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="closeButton">
+        <property name="text">
+         <string/>
+        </property>
+        <property name="icon">
+         <iconset resource="commres.qrc">
+          <normaloff>:/images/close.png</normaloff>:/images/close.png</iconset>
+        </property>
+        <property name="flat">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources>
+  <include location="commres.qrc"/>
+ </resources>
+ <connections/>
+</ui>

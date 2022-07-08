@@ -1,0 +1,88 @@
+
+.MainWindow {
+    background: rgb(22,29,48);
+}
+
+QWidget:focus {
+    outline: none; /* 去掉得到焦点时的虚线框 */
+}
+
+QLineEdit {
+    height: 24px;
+    font-size: 12px;
+    border: 1px solid #dddee1;
+    border-radius: 4px;
+    color: #495060;
+    background-color: #fff;
+    padding: 0 4px;
+}
+
+QTextEdit, QPlainTextEdit {
+    border: 1px solid #dddee1;
+    border-radius: 4px;
+    color: #495060;
+    background-color: #fff;
+    padding: 0 4px;
+}
+
+QLineEdit:focus,QTextEdit:focus,QPlainTextEdit:focus {
+    border-color: #57a3f3;
+}
+QLineEdit:!enabled {
+    background-color : rgb(240,240,240);
+}
+
+
+
+
+QMenu,QMenuBar,QTreeWidget, QTableView, QGraphicsView, QGroupBox, QMenu:disabled,QMenuBar:disabled{
+font-size: 14px;
+color:#E7ECF0;
+background-color:rgb(36, 46, 77);
+margin:3px;
+width:110px;
+}
+
+QMenu::item{
+font-size: 14px;
+padding:3px 20px;
+width:120px;
+height:40px;
+}
+
+QMenu::item:disabled{
+font-size: 14px;
+padding:3px 20px;
+width:120px;
+height:40px;
+background-color:rgb(255,255,255);
+}
+
+QMenu::indicator{
+width:13px;
+height:13px;
+}
+
+QMenu::item:selected,QMenuBar::item:selected{
+color:#E7ECF0;
+border:0px solid #738393;
+background:rgb(0, 100, 200);
+}
+
+QMenu::separator{
+height:1px;
+background:#738393;
+}
+
+QTabWidget:pane {
+border:1px solid rgb(114,144,181);
+background:  transparent; 
+border-radius:4px;
+
+}
+
+QTabBar::tab {min-width:90px;color: black;background-color:rgb(238,245,248);border: 1px solid #89bbdc;border-top-left-radius: 10px;border-top-right-radius: 10px;padding:5px;  
+margin-right:4px;
+}     
+QTabBar::tab:!selected {margin-top: 5px;}
+QTabBar::tab:selected {color: white;background-color:#89bbdc;}

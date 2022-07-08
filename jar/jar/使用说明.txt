@@ -1,0 +1,2 @@
+1.将test.db放在  D盘即可
+2.名称行  java -jar VXCombinToolServer-0.0.1-SNAPSHOT.jar
