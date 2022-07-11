@@ -23,8 +23,10 @@ SOURCES += \
     configuration/moduleinfodlg.cpp \
     configuration/systeminfodlg.cpp \
     httpclient.cpp \
+    loginwidget.cpp \
     main.cpp \
     mainwindow.cpp \
+    projectwidget.cpp \
     scene/sceneeditorview.cpp
 
 
@@ -37,7 +39,9 @@ HEADERS += \
     configuration/moduleinfodlg.h \
     configuration/systeminfodlg.h \
     httpclient.h \
+    loginwidget.h \
     mainwindow.h \
+    projectwidget.h \
     scene/sceneeditorview.h
 
 FORMS += \
@@ -47,7 +51,9 @@ FORMS += \
     configuration/inputinfowidget.ui \
     configuration/moduleinfodlg.ui \
     configuration/systemInfoDlg.ui \
+    loginwidget.ui \
     mainwindow.ui \
+    projectwidget.ui \
     scene/sceneeditorview.ui
 
 

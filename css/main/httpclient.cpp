@@ -16,7 +16,7 @@ HttpClient::HttpClient(const QString &ip, int port, QObject *reciver, const char
     , m_manager(new QNetworkAccessManager)
 {
     connect(m_manager.data(), &QNetworkAccessManager::finished, this, &HttpClient::replyFinished);
-    connect(this, SIGNAL(emitData(bool, QString)), reciver, slot);
+    connect(this, SIGNAL(emitData(bool, const QString&)), reciver, slot);
 }
 
 void HttpClient::userLogin(const QString &user, const QString &password)

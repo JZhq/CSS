@@ -5,6 +5,7 @@
 #include <QLayout>
 #include "configuration/inputinfowidget.h"
 #include "scene/sceneeditorview.h"
+#include "projectwidget.h"
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -24,9 +25,9 @@ MainWindow::~MainWindow()
 void MainWindow::initMenue()
 {
     m_createProject = new QAction(QIcon(), QStringLiteral("新建工程"), this);
-    m_openProject = new QAction(QIcon(), QStringLiteral("打开工程"), this);
-    m_closeProject = new QAction(QIcon(), QStringLiteral("关闭工程"), this);
-    QList<QAction*> actions = {m_createProject, m_openProject, m_closeProject};
+//    m_openProject = new QAction(QIcon(), QStringLiteral("打开工程"), this);
+//    m_closeProject = new QAction(QIcon(), QStringLiteral("关闭工程"), this);
+    QList<QAction*> actions = {m_createProject/*, m_openProject, m_closeProject*/};
 
     ui->menu_file->addActions(actions);
 
@@ -54,12 +55,8 @@ void MainWindow::setHandle()
         }
         if (act == m_createProject){
             qDebug() << "create project";
-        }
-        else if (act == m_openProject){
-
-        }
-        else if (act == m_closeProject){
-
+            ProjectWidget *project = new ProjectWidget();
+            project->show();
         }
     });
 
