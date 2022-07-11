@@ -1,5 +1,5 @@
 
-QT       += core gui
+QT       += core gui network
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -22,6 +22,7 @@ SOURCES += \
     configuration/inputinfowidget.cpp \
     configuration/moduleinfodlg.cpp \
     configuration/systeminfodlg.cpp \
+    httpclient.cpp \
     main.cpp \
     mainwindow.cpp \
     scene/sceneeditorview.cpp
@@ -35,6 +36,7 @@ HEADERS += \
     configuration/inputinfowidget.h \
     configuration/moduleinfodlg.h \
     configuration/systeminfodlg.h \
+    httpclient.h \
     mainwindow.h \
     scene/sceneeditorview.h
 
