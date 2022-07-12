@@ -12,6 +12,7 @@ CONFIG += c++11
 include(../include/global.prf)
 include(../include/util.prf)
 include(../include/public.prf)
+include(quazip.prf)
 
 
 

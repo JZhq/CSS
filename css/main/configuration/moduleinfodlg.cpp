@@ -23,7 +23,7 @@ ModuleInfoDlg::~ModuleInfoDlg()
 
 void ModuleInfoDlg::on_result(bool state, const QString &respons)
 {
-    qDebug() << state << respons;
+//    qDebug() << state << respons;
     if (state){
         auto isLogin = false;
         QJsonParseError parseError;
