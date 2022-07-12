@@ -48,10 +48,9 @@ void InputEditor::on_result(bool state, const QString &respons)
         QJsonDocument doc = QJsonDocument::fromJson(respons.toUtf8(), &parseError);
         if (parseError.error == QJsonParseError::NoError) {
             isLogin = doc.object().value("result").toBool();
-            int count = doc.object().value("count").toInt();
             auto resultSet = doc.object().value("resultset").toVariant().toList();
             if (isLogin){
-                qDebug() << respons << resultSet.size();
+                // qDebug() << respons << resultSet.size();
                 QList<QVariantHash> _hashs;
                 for(auto set: resultSet){
                     _hashs << set.toHash();
@@ -90,7 +89,6 @@ InputEditor::InputEditor(QWidget *parent) :
             CpuInfoDlg *_cpuDlg = new CpuInfoDlg(this);
             connect(_cpuDlg, &CpuInfoDlg::addCpuInfo, this, [=](const QVariantHash& hash){
                 m_model->appendData(hash);
-                qDebug() << "xxxx";
             });
             PopupWindow::exec(_cpuDlg, QStringLiteral("CPU信息配置"), false, false, false);
         }
@@ -116,7 +114,6 @@ InputEditor::InputEditor(QWidget *parent) :
 
     connect(ui->pushButton_edit, &QPushButton::clicked, this, [=](){
         // 编辑module 选中数据
-
         if (m_editorEm == System_Editor){
             SystemInfoDlg *_sysDlg = new SystemInfoDlg(this);
             PopupWindow::exec(_sysDlg, QStringLiteral("系统版本信息编辑"), false, false, false);
