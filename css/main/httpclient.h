@@ -152,8 +152,27 @@ public:
                           , const QString &systemver, const QString &cpuname, int type, const QString &fileName = QString());
 
 
+    //工程信息创建接口（get）
+//    localhost::8080/project/add?projectname=xxx&value=xxx
+    void addProject(const QString &projectname, const QString &value);
+
+    //工程信息更新接口（get）
+    //    localhost::8080/project/update?oldprojectname=xxx&projectname=xxx&value=xxx
+    void updateProject(const QString &oldprojectname, const QString &projectname, const QString &value);
+
+
+
+    //工程信息删除接口（get）
+    //    localhost::8080/project/delete?projectname=xxx
+    void deleteProject(const QString &projectname);
+
+    //工程信息列表查询接口（get）
+    //    localhost::8080/project/query
+    void queryProjectList();
+
+
+
 signals:
-    // flag: true 正常 false: 异常
     void emitData(bool flag, const QString &data);
 
 private slots:

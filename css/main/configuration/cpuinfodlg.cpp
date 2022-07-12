@@ -29,13 +29,16 @@ void CpuInfoDlg::on_result(bool state, const QString &respons)
         if (parseError.error == QJsonParseError::NoError) {
             isLogin = doc.object().value("result").toBool();
             if (isLogin){
-                QVariantHash cpuHash= {{"cpu", ui->lineEdit_cpu->text()},
-                                       {"desc", ui->lineEdit_desc->text()}};
+                QVariantHash cpuHash= {{"cpuname", ui->lineEdit_cpu->text()},
+                                       {"cpudesc", ui->lineEdit_desc->text()}};
+                qDebug() << cpuHash;
                 emit addCpuInfo(cpuHash);
             }
         }
     }
-    close();
+    else{
+        close();
+    }
 }
 
 void CpuInfoDlg::on_pushButton_confirm_clicked()

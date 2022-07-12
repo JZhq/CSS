@@ -6,6 +6,9 @@
 #include "frameworkinfodlg.h"
 #include "moduleinfodlg.h"
 #include <QDebug>
+#include <QJsonDocument>
+#include <QJsonParseError>
+#include <QJsonObject>
 
 const QMap<QString, InputEditor::EditorEm> InputEditor::m_tabEditors = {
     {"tab_system",      InputEditor::System_Editor},
@@ -15,53 +18,94 @@ const QMap<QString, InputEditor::EditorEm> InputEditor::m_tabEditors = {
 };
 
 const QMap<InputEditor::EditorEm, QList<QPair<QString, QString>>> InputEditor::m_editorHeaders = {
-    {InputEditor::System_Editor,        {{"sys_version", QStringLiteral("操作系统版本")},
-                                         {"desc", QStringLiteral("描述信息")}}},
+    {InputEditor::System_Editor,        {{"systemver", QStringLiteral("操作系统版本")},
+                                         {"systemname", QStringLiteral("操作系统名称")},
+                                         {"systemdesc", QStringLiteral("描述信息")}}},
 
-    {InputEditor::Cpu_Editor,           {{"cpu", QStringLiteral("CPU型号")},
-                                         {"desc",QStringLiteral("描述信息")}}},
+    {InputEditor::Cpu_Editor,           {{"cpuname", QStringLiteral("CPU型号")},
+                                         {"cpudesc",QStringLiteral("描述信息")}}},
 
     {InputEditor::Mudule_Editor,        {{"name", QStringLiteral("名称")},
-                                         {"version", QStringLiteral("版本")},
-                                         {"sys_version", QStringLiteral("系统版本")},
-                                         {"cpu", QStringLiteral("CPU型号")},
+                                         {"ver", QStringLiteral("版本")},
+                                         {"systemver", QStringLiteral("系统版本")},
+                                         {"systemname", QStringLiteral("系统名称")},
+                                         {"cpuname", QStringLiteral("CPU型号")},
                                          {"type", QStringLiteral("类型")}}},
 
     {InputEditor::Framework_Editor,     {{"name", QStringLiteral("名称")},
-                                         {"version", QStringLiteral("版本")},
-                                         {"sys_version",QStringLiteral("系统版本")},
-                                         {"cpu", QStringLiteral("CPU型号")},
+                                         {"ver", QStringLiteral("版本")},
+                                         {"systemver",QStringLiteral("系统版本")},
+                                         {"systemname",QStringLiteral("系统名称")},
+                                         {"cpuname", QStringLiteral("CPU型号")},
                                          {"type", QStringLiteral("类型")}}}
 };
 
+void InputEditor::on_result(bool state, const QString &respons)
+{
+    if (state){
+        auto isLogin = false;
+        QJsonParseError parseError;
+        QJsonDocument doc = QJsonDocument::fromJson(respons.toUtf8(), &parseError);
+        if (parseError.error == QJsonParseError::NoError) {
+            isLogin = doc.object().value("result").toBool();
+            int count = doc.object().value("count").toInt();
+            auto resultSet = doc.object().value("resultset").toVariant().toList();
+            if (isLogin){
+                qDebug() << respons << resultSet.size();
+                QList<QVariantHash> _hashs;
+                for(auto set: resultSet){
+                    _hashs << set.toHash();
+                }
+                m_model->updateData(_hashs);
+            }
+        }
+    }
+}
+
 InputEditor::InputEditor(QWidget *parent) :
     QWidget(parent),
-    ui(new Ui::InputEditor)
+    ui(new Ui::InputEditor),
+    m_model(NULL),
+    m_httpClient(NULL)
 {
     ui->setupUi(this);
 
+    m_httpClient = new HttpClient("127.0.0.1", 8080, this, SLOT(on_result(bool, const QString&)), this);
     m_editorEm = m_tabEditors.value(parent->objectName());
+
     m_model = new TableModel;
     m_model->updateHeaderData(m_editorHeaders.value(m_editorEm));
     ui->tableView->setModel(m_model);
     ui->tableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 
     connect(ui->pushButton_add, &QPushButton::clicked, this, [=](){
-
         if (m_editorEm == System_Editor){
             SystemInfoDlg *_sysDlg = new SystemInfoDlg(this);
+            connect(_sysDlg, &SystemInfoDlg::addSystemInfo, this, [=](const QVariantHash &hash){
+               m_model->appendData(hash);
+            });
             PopupWindow::exec(_sysDlg, QStringLiteral("系统版本信息配置"), false, false, false);
         }
         else if (m_editorEm == Cpu_Editor){
             CpuInfoDlg *_cpuDlg = new CpuInfoDlg(this);
+            connect(_cpuDlg, &CpuInfoDlg::addCpuInfo, this, [=](const QVariantHash& hash){
+                m_model->appendData(hash);
+                qDebug() << "xxxx";
+            });
             PopupWindow::exec(_cpuDlg, QStringLiteral("CPU信息配置"), false, false, false);
         }
         else if (m_editorEm == Framework_Editor){
             FrameworkInfoDlg *_frameDlg = new FrameworkInfoDlg(this);
+            connect(_frameDlg, &FrameworkInfoDlg::addFrameworkInfoSignal, this, [=](const QVariantHash& hash){
+                m_model->appendData(hash);
+            });
             PopupWindow::exec(_frameDlg, QStringLiteral("框架信息配置"), false, false, false);
         }
         else if (m_editorEm == Mudule_Editor){
             ModuleInfoDlg *_moduleDlg = new ModuleInfoDlg(this);
+            connect(_moduleDlg, &ModuleInfoDlg::addModuleInfo, this, [=](const QVariantHash& hash){
+                m_model->appendData(hash);
+            });
             PopupWindow::exec(_moduleDlg, QStringLiteral("模块信息配置"), false, false, false);
         }
     });
@@ -90,6 +134,17 @@ InputEditor::InputEditor(QWidget *parent) :
             PopupWindow::exec(_moduleDlg, QStringLiteral("模块信息编辑"), false, false, false);
         }
     });
+
+    if (m_editorEm == System_Editor){
+        m_httpClient->opSystemConfigQueryList();
+    }else if (m_editorEm == Cpu_Editor){
+        m_httpClient->cpuConfigQueryList();
+    }else if (m_editorEm == Mudule_Editor){
+        m_httpClient->moduleInfoQueryList();
+    }else{
+        m_httpClient->frameworkInfoQueryList();
+    }
+
 }
 
 InputEditor::~InputEditor()

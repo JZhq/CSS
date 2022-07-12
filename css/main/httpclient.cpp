@@ -16,7 +16,7 @@ HttpClient::HttpClient(const QString &ip, int port, QObject *reciver, const char
     , m_manager(new QNetworkAccessManager)
 {
     connect(m_manager.data(), &QNetworkAccessManager::finished, this, &HttpClient::replyFinished);
-    connect(this, SIGNAL(emitData(bool, const QString&)), reciver, slot);
+    connect(this, SIGNAL(emitData(bool, QString)), reciver, slot);
 }
 
 void HttpClient::userLogin(const QString &user, const QString &password)
@@ -511,6 +511,34 @@ void HttpClient::moduleInfoUpdate(const QString &oldname, const QString &oldver,
     eventLoop.exec(QEventLoop::ExcludeUserInputEvents);
     reply->deleteLater();
 }
+
+void HttpClient::addProject(const QString &projectname, const QString &value)
+{
+    QString url = QString("http://%1:%2/project/add?projectname=%3&value=%4").arg(m_ip).arg(m_port)
+            .arg(projectname).arg(value);
+    m_manager->get(QNetworkRequest(QUrl(url)));
+}
+
+void HttpClient::updateProject(const QString &oldprojectname, const QString &projectname, const QString &value)
+{
+    QString url = QString("http://%1:%2/project/update?oldprojectname=%3&projectname=%4&value=%5").arg(m_ip).arg(m_port)
+            .arg(oldprojectname).arg(projectname).arg(value);
+    m_manager->get(QNetworkRequest(QUrl(url)));
+}
+
+void HttpClient::deleteProject(const QString &projectname)
+{
+    QString url = QString("http://%1:%2/project/delete?projectname=%3").arg(m_ip).arg(m_port)
+            .arg(projectname);
+    m_manager->get(QNetworkRequest(QUrl(url)));
+}
+
+void HttpClient::queryProjectList()
+{
+    QString url = QString("http://%1:%2/project/query").arg(m_ip).arg(m_port);
+    m_manager->get(QNetworkRequest(QUrl(url)));
+}
+
 
 void HttpClient::replyFinished(QNetworkReply *reply)
 {

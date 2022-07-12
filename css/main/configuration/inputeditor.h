@@ -4,6 +4,7 @@
 #include <QMap>
 #include <QWidget>
 #include <tablemodel.h>
+#include "httpclient.h"
 
 namespace Ui {
 class InputEditor;
@@ -20,6 +21,9 @@ public:
         Framework_Editor
     };
     //Q_PROPERTY(EditorEm editor READ editor WRITE setEditor NOTIFY editorChanged)
+
+public slots:
+    void on_result(bool state, const QString& respons);
 public:
 
     explicit InputEditor(QWidget *parent = nullptr);
@@ -30,8 +34,8 @@ public:
 private:
     Ui::InputEditor *ui;
     EditorEm m_editorEm;
-
     TableModel *m_model;
+    HttpClient *m_httpClient;
 };
 
 #endif // INPUTEDITOR_H
