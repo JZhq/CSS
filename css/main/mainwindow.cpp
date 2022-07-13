@@ -56,6 +56,9 @@ void MainWindow::setHandle()
         if (act == m_createProject){
             qDebug() << "create project";
             ProjectWidget *project = new ProjectWidget();
+            if (m_centralView){
+                connect(project, &ProjectWidget::addproject, m_centralView, &SceneEditorView::on_addProject);
+            }
             project->show();
         }
     });

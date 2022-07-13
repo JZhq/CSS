@@ -57,9 +57,6 @@ FORMS += \
     projectwidget.ui \
     scene/sceneeditorview.ui
 
-
-
-
 CONFIG(debug, debug|release) {
     TARGET = demo
     DESTDIR = $$DLL_DIR_DEBUG

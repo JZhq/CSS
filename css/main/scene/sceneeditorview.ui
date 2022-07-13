@@ -21,17 +21,14 @@
      </property>
      <widget class="QGroupBox" name="groupBox">
       <property name="title">
-       <string>工程树</string>
+       <string/>
       </property>
       <layout class="QGridLayout" name="gridLayout_3">
        <item row="0" column="0">
-        <widget class="QTreeWidget" name="treeWidget_project">
-         <column>
-          <property name="text">
-           <string notr="true">1</string>
-          </property>
-         </column>
-        </widget>
+        <widget class="QTreeWidget" name="treeWidget_project"/>
+       </item>
+       <item row="1" column="0">
+        <widget class="QTreeWidget" name="treeWidget_unit"/>
        </item>
       </layout>
      </widget>

@@ -56,7 +56,7 @@ void ModuleInfoDlg::on_result(bool state, const QString &respons)
             }
 
             if (isLogin && !hash.contains("count")){
-                QVariantHash cpuHash= {{"name", ui->lineEdit_name->text()},
+                QVariantHash cpuHash= {{"modu_name", ui->lineEdit_name->text()},
                                        {"ver", ui->lineEdit_version->text()},
                                        {"systemver", ui->comboBox_sys_version->currentText()},
                                        {"systemname", ui->comboBox_sys_name->currentText()},
