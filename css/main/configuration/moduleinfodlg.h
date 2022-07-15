@@ -1,19 +1,18 @@
 #ifndef MODULEINFODLG_H
 #define MODULEINFODLG_H
 
-#include <QWidget>
-#include "httpclient.h"
+#include "editorbase.h"
 
 namespace Ui {
 class ModuleInfoDlg;
 }
 
-class ModuleInfoDlg : public QWidget
+class ModuleInfoDlg : public EditorBase
 {
     Q_OBJECT
 
 public:
-    explicit ModuleInfoDlg(QWidget *parent = nullptr);
+    explicit ModuleInfoDlg(QWidget *parent = nullptr, QVariantHash d=QVariantHash(), EditorMode m=EditorMode::New);
     ~ModuleInfoDlg();
 
 private slots:
@@ -27,7 +26,6 @@ signals:
 
 private:
     Ui::ModuleInfoDlg *ui;
-    HttpClient *m_httpClient;
 };
 
 #endif // MODULEINFODLG_H

@@ -5,15 +5,15 @@
 #include <QJsonObject>
 #include <QDebug>
 
-ModuleInfoDlg::ModuleInfoDlg(QWidget *parent) :
-    QWidget(parent),
-    ui(new Ui::ModuleInfoDlg),
-    m_httpClient(NULL)
+ModuleInfoDlg::ModuleInfoDlg(QWidget *parent, QVariantHash d, EditorMode m) :
+    EditorBase(parent, d, m),
+    ui(new Ui::ModuleInfoDlg)
 {
     ui->setupUi(this);
-    m_httpClient = new HttpClient("127.0.0.1", 8080, this, SLOT(on_result(bool, const QString&)), this);
-    m_httpClient->cpuConfigQueryList();
-    m_httpClient->opSystemConfigQueryList();
+    if (m_httpClient){
+        m_httpClient->cpuConfigQueryList();
+        m_httpClient->opSystemConfigQueryList();
+    }
 }
 
 ModuleInfoDlg::~ModuleInfoDlg()

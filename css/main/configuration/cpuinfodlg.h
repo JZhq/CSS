@@ -1,18 +1,17 @@
 #ifndef CPUINFODLG_H
 #define CPUINFODLG_H
 
-#include <QWidget>
-#include "httpclient.h"
+#include "editorbase.h"
 
 namespace Ui {
 class CpuInfoDlg;
 }
 
-class CpuInfoDlg : public QWidget
+class CpuInfoDlg : public EditorBase
 {
     Q_OBJECT
 public:
-    explicit CpuInfoDlg(QWidget *parent = nullptr);
+    explicit CpuInfoDlg(QWidget *parent = nullptr, QVariantHash d=QVariantHash(), EditorMode m=EditorMode::New);
     ~CpuInfoDlg();
 
 private slots:
@@ -25,7 +24,6 @@ signals:
 
 private:
     Ui::CpuInfoDlg *ui;
-    HttpClient *m_httpClient;
 };
 
 #endif // CPUINFODLG_H

@@ -6,7 +6,7 @@
 #include <QJsonObject>
 #include <QMessageBox>
 
-ProjectWidget::ProjectWidget(QWidget *parent) :
+ProjectWidget::ProjectWidget(EditMode m, QWidget *parent) :
     QWidget(parent),
     ui(new Ui::ProjectWidget),
     m_httpClient(NULL)

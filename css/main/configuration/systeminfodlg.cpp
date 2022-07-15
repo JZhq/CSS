@@ -5,13 +5,11 @@
 #include <QJsonObject>
 #include <QDebug>
 
-SystemInfoDlg::SystemInfoDlg(QWidget *parent) :
-    QWidget(parent),
-    ui(new Ui::systemInfoDlg),
-    m_httpClient(NULL)
+SystemInfoDlg::SystemInfoDlg(QWidget *parent, QVariantHash d, EditorMode m) :
+    EditorBase(parent, d, m),
+    ui(new Ui::systemInfoDlg)
 {
     ui->setupUi(this);
-    m_httpClient = new HttpClient("127.0.0.1", 8080, this, SLOT(on_result(bool, const QString&)), this);
 }
 
 SystemInfoDlg::~SystemInfoDlg()

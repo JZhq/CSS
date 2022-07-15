@@ -11,7 +11,7 @@ class HttpClient : public QObject
     Q_OBJECT
 public:
     //const char *slot 参数为bool, QString
-    HttpClient(const QString &ip, int port, QObject *reciver, const char *slot, QObject *parent = nullptr);
+    HttpClient(const QString &ip, int port, QObject *reciver = nullptr, const char *slot = nullptr, QObject *parent = nullptr);
 
     //用户登录
     //示例：localhost::8080/usermanager/login?user=xxx&password=xxxx
@@ -169,8 +169,6 @@ public:
     //工程信息列表查询接口（get）
     //    localhost::8080/project/query
     void queryProjectList();
-
-
 
 signals:
     void emitData(bool flag, const QString &data);

@@ -18,6 +18,7 @@ include(quazip.prf)
 
 SOURCES += \
     configuration/cpuinfodlg.cpp \
+    configuration/editorbase.cpp \
     configuration/frameworkinfodlg.cpp \
     configuration/inputeditor.cpp \
     configuration/inputinfowidget.cpp \
@@ -34,6 +35,7 @@ SOURCES += \
 HEADERS += \
     configuration/configglobal.h \
     configuration/cpuinfodlg.h \
+    configuration/editorbase.h \
     configuration/frameworkinfodlg.h \
     configuration/inputeditor.h \
     configuration/inputinfowidget.h \

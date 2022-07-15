@@ -11,9 +11,14 @@ class ProjectWidget;
 class ProjectWidget : public QWidget
 {
     Q_OBJECT
+public:
+    enum EditMode{
+        New,
+        Update
+    };
 
 public:
-    explicit ProjectWidget(QWidget *parent = nullptr);
+    explicit ProjectWidget(EditMode m = EditMode::New, QWidget *parent = nullptr);
     ~ProjectWidget();
 
 private slots:

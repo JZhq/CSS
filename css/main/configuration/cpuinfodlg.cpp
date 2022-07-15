@@ -5,13 +5,11 @@
 #include <QJsonParseError>
 #include <QJsonObject>
 
-CpuInfoDlg::CpuInfoDlg(QWidget *parent) :
-    QWidget(parent),
-    ui(new Ui::CpuInfoDlg),
-    m_httpClient(NULL)
+CpuInfoDlg::CpuInfoDlg(QWidget *parent, QVariantHash d, EditorMode m)
+    : EditorBase{parent,  d, m},
+      ui(new Ui::CpuInfoDlg)
 {
     ui->setupUi(this);
-    m_httpClient = new HttpClient("127.0.0.1", 8080, this, SLOT(on_result(bool, const QString&)), this);
 }
 
 CpuInfoDlg::~CpuInfoDlg()

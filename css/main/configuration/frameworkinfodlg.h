@@ -1,20 +1,20 @@
 #ifndef FRAMEWORKINFODLG_H
 #define FRAMEWORKINFODLG_H
 
-#include <QWidget>
-#include "httpclient.h"
+#include "editorbase.h"
 
 namespace Ui {
 class FrameworkInfoDlg;
 }
 
-class FrameworkInfoDlg : public QWidget
+class FrameworkInfoDlg : public EditorBase
 {
     Q_OBJECT
 
 public:
-    explicit FrameworkInfoDlg(QWidget *parent = nullptr);
+    explicit FrameworkInfoDlg( QWidget *parent = nullptr, QVariantHash d=QVariantHash(), EditorMode m=EditorMode::New );
     ~FrameworkInfoDlg();
+
 signals:
     void addFrameworkInfoSignal(const QVariantHash &);
 
@@ -26,7 +26,6 @@ private slots:
 
 private:
     Ui::FrameworkInfoDlg *ui;
-    HttpClient *m_httpClient;
     QStringList m_resourDirs;
 };
 

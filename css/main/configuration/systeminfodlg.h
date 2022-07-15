@@ -1,19 +1,16 @@
 #ifndef systemInfoDlg_H
 #define systemInfoDlg_H
 
-#include <QWidget>
-#include "httpclient.h"
-
+#include "editorbase.h"
 namespace Ui {
 class systemInfoDlg;
 }
 
-class SystemInfoDlg : public QWidget
+class SystemInfoDlg : public EditorBase
 {
     Q_OBJECT
-
 public:
-    explicit SystemInfoDlg(QWidget *parent = nullptr);
+    explicit SystemInfoDlg(QWidget *parent = nullptr, QVariantHash d=QVariantHash(), EditorMode m=EditorMode::New);
     ~SystemInfoDlg();
 
 private slots:
@@ -26,7 +23,6 @@ signals:
 
 private:
     Ui::systemInfoDlg *ui;
-    HttpClient *m_httpClient;
 };
 
 #endif // systemInfoDlg_H

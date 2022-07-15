@@ -25,7 +25,7 @@ const QMap<InputEditor::EditorEm, QList<QPair<QString, QString>>> InputEditor::m
     {InputEditor::Cpu_Editor,           {{"cpuname", QStringLiteral("CPU型号")},
                                          {"cpudesc",QStringLiteral("描述信息")}}},
 
-    {InputEditor::Mudule_Editor,        {{"name", QStringLiteral("名称")},
+    {InputEditor::Mudule_Editor,        {{"modu_name", QStringLiteral("名称")},
                                          {"ver", QStringLiteral("版本")},
                                          {"systemver", QStringLiteral("系统版本")},
                                          {"systemname", QStringLiteral("系统名称")},
@@ -61,15 +61,13 @@ void InputEditor::on_result(bool state, const QString &respons)
     }
 }
 
-InputEditor::InputEditor(QWidget *parent) :
-    QWidget(parent),
+InputEditor::InputEditor(QWidget *parent, QVariantHash d, EditorMode m) :
+    EditorBase(parent,d,m),
     ui(new Ui::InputEditor),
-    m_model(NULL),
-    m_httpClient(NULL)
+    m_model(NULL)
 {
     ui->setupUi(this);
 
-    m_httpClient = new HttpClient("127.0.0.1", 8080, this, SLOT(on_result(bool, const QString&)), this);
     m_editorEm = m_tabEditors.value(parent->objectName());
 
     m_model = new TableModel;

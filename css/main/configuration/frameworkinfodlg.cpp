@@ -6,13 +6,11 @@
 #include <QJsonParseError>
 #include <QJsonObject>
 
-FrameworkInfoDlg::FrameworkInfoDlg(QWidget *parent) :
-    QWidget(parent),
-    ui(new Ui::FrameworkInfoDlg),
-    m_httpClient(NULL)
+FrameworkInfoDlg::FrameworkInfoDlg(QWidget *parent, QVariantHash d, EditorMode m) :
+    EditorBase(parent,d,m),
+    ui(new Ui::FrameworkInfoDlg)
 {
     ui->setupUi(this);
-    m_httpClient = new HttpClient("127.0.0.1", 8080, this, SLOT(on_result(bool, const QString&)), this);
     m_httpClient->cpuConfigQueryList();
     m_httpClient->opSystemConfigQueryList();
 }

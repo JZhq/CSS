@@ -16,7 +16,8 @@ HttpClient::HttpClient(const QString &ip, int port, QObject *reciver, const char
     , m_manager(new QNetworkAccessManager)
 {
     connect(m_manager.data(), &QNetworkAccessManager::finished, this, &HttpClient::replyFinished);
-    connect(this, SIGNAL(emitData(bool, QString)), reciver, slot);
+    if (reciver && slot)
+        connect(this, SIGNAL(emitData(bool, QString)), reciver, slot);
 }
 
 void HttpClient::userLogin(const QString &user, const QString &password)
@@ -313,7 +314,7 @@ void HttpClient::moduleInfoAdd(const QString &name, const QString &ver, const QS
 
     QHttpPart part_name;
     //    part_name.setHeader(QNetworkRequest::ContentTypeHeader, QVariant("text/plain"));
-    part_name.setHeader(QNetworkRequest::ContentDispositionHeader, QVariant("form-data; name=\"name\""));
+    part_name.setHeader(QNetworkRequest::ContentDispositionHeader, QVariant("form-data; name=\"modu_name\""));
     part_name.setBody(name.toUtf8());
 
     QHttpPart part_ver;
@@ -412,7 +413,7 @@ void HttpClient::moduleInfoQueryList()
 
 void HttpClient::moduleInfoDelete(const QString &name, const QString &ver)
 {
-    QString url = QString("http://%1:%2/moduleinfo/delete?name=%3&ver=%3")
+    QString url = QString("http://%1:%2/moduleinfo/delete?modu_name=%3&ver=%3")
             .arg(m_ip).arg(m_port).arg(name).arg(ver);
     m_manager->get(QNetworkRequest(QUrl(url)));
 }
@@ -434,7 +435,7 @@ void HttpClient::moduleInfoUpdate(const QString &oldname, const QString &oldver,
 
     QHttpPart part_name;
     //    part_name.setHeader(QNetworkRequest::ContentTypeHeader, QVariant("text/plain"));
-    part_name.setHeader(QNetworkRequest::ContentDispositionHeader, QVariant("form-data; name=\"name\""));
+    part_name.setHeader(QNetworkRequest::ContentDispositionHeader, QVariant("form-data; name=\"modu_name\""));
     part_name.setBody(name.toUtf8());
 
     QHttpPart part_ver;
