@@ -1,10 +1,11 @@
-#include "frameworkinfodlg.h"
+﻿#include "frameworkinfodlg.h"
 #include "ui_frameworkinfodlg.h"
 #include <QFileDialog>
 #include <QDebug>
 #include <QJsonDocument>
 #include <QJsonParseError>
 #include <QJsonObject>
+#include <QDir>
 
 FrameworkInfoDlg::FrameworkInfoDlg(QWidget *parent, QVariantHash d, EditorMode m) :
     EditorBase(parent,d,m),
@@ -28,7 +29,17 @@ void FrameworkInfoDlg::on_pushButton_confirm_clicked()
     QString sys_name = ui->comboBox_sys_name->currentText();
     QString cpu = ui->comboBox_cpu->currentText();
     QString type = ui->comboBox_type->currentText();
-    QString fileName = ui->lineEdit_res->text();
+    const QString dir = ui->lineEdit_res->text();
+
+    if(dir.isEmpty() || QDir(dir).isEmpty() ){
+        QMessageBox::information(this, u8"提示", u8"无效框架资源路径");
+        return;
+    }
+
+    QString fileName =  QString("%1/%2_%3.zip").arg(dir).arg(name).arg(verison);
+    if (!compressDir(fileName, dir)){
+        qDebug() << "compressDir failed" << fileName;
+    }
 
     m_httpClient->frameworkInfoAdd(name, verison, sys_version, sys_name, cpu, type.toInt(), fileName);
 }
@@ -42,18 +53,13 @@ void FrameworkInfoDlg::on_pushButton_cancel_clicked()
 
 void FrameworkInfoDlg::on_pushButton_brow_clicked()
 {
-    QFileDialog *urlDlg = new QFileDialog(this);
-    urlDlg->setModal(QFileDialog::DirectoryOnly);
-    urlDlg->exec();
-    auto urls = urlDlg->selectedFiles();
-    for(auto url : urls){
-        qDebug() << url;
-    }
+   const QString dir = QFileDialog::getExistingDirectory(this,  u8"框架资源选择");
+   ui->lineEdit_res->setText(dir);
 }
 
 void FrameworkInfoDlg::on_result(bool state, const QString &respons)
 {
-    qDebug() << state << respons;
+    // qDebug() << state << respons;
     if (state){
         auto isLogin = false;
         QJsonParseError parseError;
@@ -93,6 +99,7 @@ void FrameworkInfoDlg::on_result(bool state, const QString &respons)
                                         {"type",         ui->comboBox_type->currentText()},
                                         {"fileName",     ui->lineEdit_res->text()}};
                 emit addFrameworkInfoSignal(frameHash);
+                emit editorDataChanged();
             }
         }
     }

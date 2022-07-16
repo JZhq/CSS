@@ -1,4 +1,4 @@
-#include "inputeditor.h"
+﻿#include "inputeditor.h"
 #include "ui_inputeditor.h"
 #include "systeminfodlg.h"
 #include "popupwindow.h"
@@ -114,18 +114,22 @@ InputEditor::InputEditor(QWidget *parent, QVariantHash d, EditorMode m) :
         // 编辑module 选中数据
         if (m_editorEm == System_Editor){
             SystemInfoDlg *_sysDlg = new SystemInfoDlg(this);
+            connect(_sysDlg, &SystemInfoDlg::editorDataChanged, this, &InputEditor::editorDataChanged);
             PopupWindow::exec(_sysDlg, QStringLiteral("系统版本信息编辑"), false, false, false);
         }
         else if (m_editorEm == Cpu_Editor){
             CpuInfoDlg *_cpuDlg = new CpuInfoDlg(this);
+            connect(_cpuDlg, &CpuInfoDlg::editorDataChanged, this, &InputEditor::editorDataChanged);
             PopupWindow::exec(_cpuDlg, QStringLiteral("CPU信息编辑"), false, false, false);
         }
         else if (m_editorEm == Framework_Editor){
             FrameworkInfoDlg *_frameDlg = new FrameworkInfoDlg(this);
+            connect(_frameDlg, &FrameworkInfoDlg::editorDataChanged, this, &InputEditor::editorDataChanged);
             PopupWindow::exec(_frameDlg, QStringLiteral("框架信息编辑"), false, false, false);
         }
         else if (m_editorEm == Mudule_Editor){
             ModuleInfoDlg *_moduleDlg = new ModuleInfoDlg(this);
+            connect(_moduleDlg, &ModuleInfoDlg::editorDataChanged, this, &InputEditor::editorDataChanged);
             PopupWindow::exec(_moduleDlg, QStringLiteral("模块信息编辑"), false, false, false);
         }
     });

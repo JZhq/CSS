@@ -177,9 +177,9 @@ private slots:
     void replyFinished(QNetworkReply *reply);
 
 private:
-    QString m_ip;
-    int m_port;
-    const char *m_slot;
+    QString         m_ip;
+    int             m_port;
+    const char      *m_slot;
     QSharedPointer<QNetworkAccessManager> m_manager;
 };
 

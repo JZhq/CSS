@@ -1,4 +1,4 @@
-#include "systeminfodlg.h"
+﻿#include "systeminfodlg.h"
 #include "ui_systeminfodlg.h"
 #include <QJsonDocument>
 #include <QJsonParseError>
@@ -46,6 +46,7 @@ void SystemInfoDlg::on_result(bool state, const QString &respons)
                                        {"systemname", ui->lineEdit_name->text()},
                                        {"systemdesc", ui->lineEdit_desc->text()}};
                 emit addSystemInfo(cpuHash);
+                emit editorDataChanged();
             }
         }
     }

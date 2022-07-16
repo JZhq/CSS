@@ -1,4 +1,4 @@
-#include "projectwidget.h"
+﻿#include "projectwidget.h"
 #include "ui_projectwidget.h"
 #include <QDebug>
 #include <QJsonDocument>

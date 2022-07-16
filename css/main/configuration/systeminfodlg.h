@@ -1,4 +1,4 @@
-#ifndef systemInfoDlg_H
+﻿#ifndef systemInfoDlg_H
 #define systemInfoDlg_H
 
 #include "editorbase.h"

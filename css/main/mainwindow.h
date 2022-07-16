@@ -1,4 +1,4 @@
-#ifndef MAINWINDOW_H
+﻿#ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
 #include <QMainWindow>
@@ -21,17 +21,18 @@ private:
     void initMenue();
     void setHandle();
 
+public slots:
+    void on_editorDataChanged();
+
 private:
-    Ui::MainWindow *ui;
-    QAction* m_createProject = nullptr;
-    QAction* m_openProject = nullptr;
-    QAction* m_closeProject = nullptr;
+    Ui::MainWindow      *ui;
+    QAction             *m_createProject = nullptr;
 
-    QAction* m_scencConfig = nullptr;
-    QAction* m_inputConfig = nullptr;
-    QAction* m_userConfig = nullptr;
+    QAction             *m_scencConfig = nullptr;
+    QAction             *m_inputConfig = nullptr;
+    QAction             *m_userConfig = nullptr;
 
-    InputInfoWidget* m_input = nullptr;
-    SceneEditorView* m_centralView = nullptr;
+    InputInfoWidget     *m_input = nullptr;
+    SceneEditorView     *m_centralView = nullptr;
 };
 #endif // MAINWINDOW_H

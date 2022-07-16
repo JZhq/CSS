@@ -1,4 +1,4 @@
-#ifndef CPUINFODLG_H
+﻿#ifndef CPUINFODLG_H
 #define CPUINFODLG_H
 
 #include "editorbase.h"

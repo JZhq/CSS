@@ -1,4 +1,4 @@
-#ifndef INPUTINFOWIDGET_H
+﻿#ifndef INPUTINFOWIDGET_H
 #define INPUTINFOWIDGET_H
 
 #include <QWidget>
@@ -14,6 +14,8 @@ class InputInfoWidget : public QWidget
 public:
     explicit InputInfoWidget(QWidget *parent = nullptr);
     ~InputInfoWidget();
+signals:
+    void inputEditorDataChanged();
 
 private:
     Ui::InputInfoWidget *ui;

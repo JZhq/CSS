@@ -1,4 +1,4 @@
-#include "mainwindow.h"
+﻿#include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include <QAction>
 #include <QDebug>
@@ -25,8 +25,6 @@ MainWindow::~MainWindow()
 void MainWindow::initMenue()
 {
     m_createProject = new QAction(QIcon(), QStringLiteral("新建工程"), this);
-//    m_openProject = new QAction(QIcon(), QStringLiteral("打开工程"), this);
-//    m_closeProject = new QAction(QIcon(), QStringLiteral("关闭工程"), this);
     QList<QAction*> actions = {m_createProject/*, m_openProject, m_closeProject*/};
 
     ui->menu_file->addActions(actions);
@@ -40,8 +38,6 @@ void MainWindow::initMenue()
     m_userConfig = new QAction(QIcon(), QStringLiteral("用户信息管理"), this);
     QList<QAction*> toolActs = {m_userConfig};
     ui->menu_tool->addActions(toolActs);
-
-
 }
 
 void MainWindow::setHandle()
@@ -73,11 +69,11 @@ void MainWindow::setHandle()
                 takeCentralWidget();
                 setCentralWidget(m_centralView);
             }
-            qDebug() << "scene config";
         }
         else if (act == m_inputConfig){
             if (m_input == nullptr){
                 m_input = new InputInfoWidget();
+                connect(m_input, &InputInfoWidget::inputEditorDataChanged, this, &MainWindow::on_editorDataChanged);
                 takeCentralWidget();
                 setCentralWidget(m_input);
             }
@@ -85,10 +81,14 @@ void MainWindow::setHandle()
     });
     connect(ui->menu_tool, &QMenu::triggered, this, [=](QAction *act){
         if (act == m_userConfig){
-            qDebug() << "user config";
         }
     });
 
 
+}
+
+void MainWindow::on_editorDataChanged()
+{
+    qDebug() << "on_editorDataChanged::";
 }
 

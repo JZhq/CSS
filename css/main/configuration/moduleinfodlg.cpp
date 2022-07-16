@@ -1,9 +1,10 @@
-#include "moduleinfodlg.h"
+﻿#include "moduleinfodlg.h"
 #include "ui_moduleinfodlg.h"
 #include <QJsonDocument>
 #include <QJsonParseError>
 #include <QJsonObject>
 #include <QDebug>
+#include <QFileDialog>
 
 ModuleInfoDlg::ModuleInfoDlg(QWidget *parent, QVariantHash d, EditorMode m) :
     EditorBase(parent, d, m),
@@ -64,6 +65,7 @@ void ModuleInfoDlg::on_result(bool state, const QString &respons)
                                        {"type", ui->comboBox_type->currentText()},
                                        {"fileName", ui->lineEdit_res->text()}};
                 emit addModuleInfo(cpuHash);
+                emit editorDataChanged();
             }
         }
     }
@@ -78,7 +80,16 @@ void ModuleInfoDlg::on_pushButton_confirm_clicked()
     QString sys_name = ui->comboBox_sys_name->currentText();
     QString cpu = ui->comboBox_cpu->currentText();
     QString type = ui->comboBox_type->currentText();
-    QString fileName = ui->lineEdit_res->text();
+    const QString dir = ui->lineEdit_res->text();
+    if(dir.isEmpty() || QDir(dir).isEmpty() ){
+        QMessageBox::information(this, u8"提示", u8"无效模块资源路径");
+        return;
+    }
+
+    QString fileName =  QString("%1/%2_%3.zip").arg(dir).arg(name).arg(version);
+    if (!compressDir(fileName, dir)){
+        qDebug() << "compressDir failed" << fileName;
+    }
 
     m_httpClient->moduleInfoAdd(name, version, sys_name, sys_verion, cpu, type.toInt(), fileName);
 }
@@ -92,6 +103,7 @@ void ModuleInfoDlg::on_pushButton_cancel_clicked()
 
 void ModuleInfoDlg::on_pushButton_brow_clicked()
 {
-
+    const QString dir = QFileDialog::getExistingDirectory(this, u8"模块资源选择");
+    ui->lineEdit_res->setText(dir);
 }
 

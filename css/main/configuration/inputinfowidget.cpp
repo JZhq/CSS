@@ -1,4 +1,4 @@
-#include "inputinfowidget.h"
+﻿#include "inputinfowidget.h"
 #include "ui_inputinfowidget.h"
 
 InputInfoWidget::InputInfoWidget(QWidget *parent) :
@@ -6,6 +6,7 @@ InputInfoWidget::InputInfoWidget(QWidget *parent) :
     ui(new Ui::InputInfoWidget)
 {
     ui->setupUi(this);
+    connect(ui->widget, &InputEditor::editorDataChanged, this, &InputInfoWidget::inputEditorDataChanged);
 }
 
 InputInfoWidget::~InputInfoWidget()

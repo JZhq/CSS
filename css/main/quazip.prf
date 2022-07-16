@@ -1,5 +1,5 @@
-INCLUDEPATH += $$PWD/quazip
-
+INCLUDEPATH += $$PWD/quazip \
+                $$PWD/QtZlib
 
 CONFIG(debug, debug|release) {
     LIBS += -L$$PWD/debug/ -lquazipd

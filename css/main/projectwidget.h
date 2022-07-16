@@ -1,4 +1,4 @@
-#ifndef PROJECTWIDGET_H
+﻿#ifndef PROJECTWIDGET_H
 #define PROJECTWIDGET_H
 
 #include <QWidget>

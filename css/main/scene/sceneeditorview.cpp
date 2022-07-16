@@ -1,4 +1,4 @@
-#include "sceneeditorview.h"
+﻿#include "sceneeditorview.h"
 #include "ui_sceneeditorview.h"
 #include <QTreeWidgetItem>
 #include <QJsonDocument>
@@ -221,4 +221,9 @@ void SceneEditorView::on_result(bool state, const QString &respons)
             }
         }
     }
+}
+
+void SceneEditorView::on_dataChanged()
+{
+
 }

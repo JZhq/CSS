@@ -1,4 +1,4 @@
-#ifndef LOGINWIDGET_H
+﻿#ifndef LOGINWIDGET_H
 #define LOGINWIDGET_H
 
 #include <QWidget>
@@ -25,8 +25,8 @@ private slots:
     void on_loginResult(bool  state, const QString& json);
 
 private:
-    Ui::LoginWidget *ui;
-    HttpClient  *m_httpClient;
+    Ui::LoginWidget         *ui;
+    HttpClient              *m_httpClient;
 };
 
 #endif // LOGINWIDGET_H

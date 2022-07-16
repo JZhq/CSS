@@ -1,4 +1,4 @@
-#ifndef FRAMEWORKINFODLG_H
+﻿#ifndef FRAMEWORKINFODLG_H
 #define FRAMEWORKINFODLG_H
 
 #include "editorbase.h"
@@ -25,8 +25,8 @@ private slots:
     void on_result(bool state, const QString& respons);
 
 private:
-    Ui::FrameworkInfoDlg *ui;
-    QStringList m_resourDirs;
+    Ui::FrameworkInfoDlg    *ui;
+    QStringList             m_resourDirs;
 };
 
 #endif // FRAMEWORKINFODLG_H

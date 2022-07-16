@@ -1,4 +1,4 @@
-#ifndef INPUTEDITOR_H
+﻿#ifndef INPUTEDITOR_H
 #define INPUTEDITOR_H
 
 #include <QMap>
@@ -32,8 +32,8 @@ public:
     static const QMap<EditorEm, QList<QPair<QString, QString> >> m_editorHeaders;
 private:
     Ui::InputEditor *ui;
-    EditorEm m_editorEm;
-    TableModel *m_model;
+    EditorEm        m_editorEm;
+    TableModel      *m_model;
 };
 
 #endif // INPUTEDITOR_H

@@ -1,4 +1,4 @@
-#ifndef SCENEEDITORVIEW_H
+﻿#ifndef SCENEEDITORVIEW_H
 #define SCENEEDITORVIEW_H
 
 #include <QMap>
@@ -33,6 +33,8 @@ public slots:
     void on_detailResModule(const QVariantHash &_d);
 
     void on_result(bool state, const QString& respons);
+
+    void on_dataChanged();
 private:
     Ui::SceneEditorView *ui;
     QMap<QString, QTreeWidgetItem*>  m_projectTopItems;

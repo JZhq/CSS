@@ -1,4 +1,4 @@
-#ifndef MODULEINFODLG_H
+﻿#ifndef MODULEINFODLG_H
 #define MODULEINFODLG_H
 
 #include "editorbase.h"

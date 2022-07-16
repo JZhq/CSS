@@ -1,4 +1,4 @@
-#include "loginwidget.h"
+﻿#include "loginwidget.h"
 #include "ui_loginwidget.h"
 
 #include <QDebug>

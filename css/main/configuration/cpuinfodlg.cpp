@@ -1,4 +1,4 @@
-#include "cpuinfodlg.h"
+﻿#include "cpuinfodlg.h"
 #include "ui_cpuinfodlg.h"
 #include <QDebug>
 #include <QJsonDocument>
@@ -31,6 +31,7 @@ void CpuInfoDlg::on_result(bool state, const QString &respons)
                                        {"cpudesc", ui->lineEdit_desc->text()}};
                 qDebug() << cpuHash;
                 emit addCpuInfo(cpuHash);
+                emit editorDataChanged();
             }
         }
     }
