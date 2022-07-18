@@ -70,13 +70,13 @@ void GraphicsScene::onSaveEditTree()
             }
 
             //验证算法表达式
-            if(baseItem->getItemType() == ItemAndPropertyType::PlugNode)
+            if(baseItem->getItemType() == ItemAndPropertyType::FrameworkType)
             {
                 Json json(baseItem->getTreeData()->getItemData().nodeProperty);
                 QString t_pluginName = json.getString(QStringLiteral("插件名称"));
             }
             // 验证描述节点
-            if (baseItem->getItemType() == ItemAndPropertyType::BranchNode)
+            if (baseItem->getItemType() == ItemAndPropertyType::ModuleType)
             {
                 branchCount++;
                 Json json(baseItem->getTreeData()->getItemData().nodeProperty);
@@ -96,7 +96,7 @@ void GraphicsScene::onSaveEditTree()
 
     if(rootCount == 1 && rootItem)
     {
-        if(rootItem->getItemType() != ItemAndPropertyType::BranchNode)
+        if(rootItem->getItemType() != ItemAndPropertyType::FrameworkType)
         {
             QMessageBox::information(NULL,QStringLiteral("提示"),QStringLiteral("根节点不正确，请修改后保存"));
             return;
@@ -240,62 +240,6 @@ void GraphicsScene::onCopyTreeNode()
 void GraphicsScene::onPasteTreeNode()
 {
     return;
-    CommonData::isTreeEdited = true;
-
-    QPoint t_point;
-    QPointF t_scene;
-
-    QList<QGraphicsView *> listViews = this->views();
-    foreach (QGraphicsView *view, listViews) {
-        //转换坐标
-        t_point = view->mapFromGlobal(QCursor::pos());
-        t_scene = view->mapToScene(t_point);
-    }
-
-    QList<QGraphicsObject*> items;
-    foreach (PublicData::PelItemData itemData, m_copyNodeDatas) {
-        PublicData::PelItemData t_itemData = itemData;
-        if (t_itemData.itemType == ItemAndPropertyType::TestNode &&
-                m_checkedTreeData.treeType == PublicData::TreeType::TaskAnalyTree) {
-            QMessageBox::information(NULL,QStringLiteral("提示"),QStringLiteral("任务分析树中不允许挂载测试节点"));
-            return;
-        }
-        if (t_itemData.itemType == ItemAndPropertyType::PlugNode &&
-                m_checkedTreeData.treeType == PublicData::TreeType::TaskAnalyTree) {
-            QMessageBox::information(NULL,QStringLiteral("提示"),QStringLiteral("任务分析树中不允许挂载插件节点"));
-            return;
-        }
-        if (t_itemData.itemType == ItemAndPropertyType::PlugNode &&
-                m_checkedTreeData.treeType == PublicData::TreeType::SysDiagnoseTree) {
-            QMessageBox::information(NULL,QStringLiteral("提示"),QStringLiteral("系统诊断故障树中不允许挂载插件节点"));
-            return;
-        }
-        BaseItem *item = ItemsFactory::instance()->creatItem(itemData.itemType);
-        if (itemData.itemType == ItemAndPropertyType::BaseKnowledgeNode){
-            QStringList ids = t_itemData.id.split("_");
-            t_itemData.id = QString("%1_%2").arg(ids.at(0)).arg(QUuid::createUuid().toString());
-        }
-        else
-            t_itemData.id = QUuid::createUuid().toString();
-        t_itemData.parentId = "";
-        t_itemData.pos = QPointF();
-        //重新指定树的id
-        t_itemData.treeId = m_checkedTreeData.id;
-        //连接删除槽
-        connect(item, &BaseItem::signalDelNode, this, &GraphicsScene::onDeleteTreeNode, Qt::UniqueConnection);
-        //连接复制槽
-        connect(item, &BaseItem::signalCopyNode, this, &GraphicsScene::onCopyTreeNode, Qt::UniqueConnection);
-
-        item->setPos(t_scene);
-
-        // addItem(item);
-        items.append(item);
-        item->setTreeData(t_itemData);
-
-        //移动粘贴点
-        t_scene += QPointF(50,0);
-    }
-    addItemsWithUndo(items);
 }
 
 void GraphicsScene::onClearEditView()
@@ -652,14 +596,14 @@ void GraphicsScene::dropEvent(QGraphicsSceneDragDropEvent *event)
         {
             QString t_str = event->mimeData()->text();
 
-            if(t_str == DescribeNodeStr)
+            if(t_str == FrameworkNode)
             {
                 //event->acceptProposedAction();
                 root = true;
             }
             else
             {
-                QMessageBox::information(NULL,QStringLiteral("提示"),QStringLiteral("根节点必须为描述节点!"));
+                QMessageBox::information(NULL,QStringLiteral("提示"),QStringLiteral("根节点必须为框架节点!"));
                 return;
             }
         }
@@ -669,54 +613,13 @@ void GraphicsScene::dropEvent(QGraphicsSceneDragDropEvent *event)
         QString t_str = event->mimeData()->text();
         //节点数据
         PublicData::PelItemData nodeData;
-        if(DescribeNodeStr == t_str)
+        if(ModuleNode == t_str)
         {
-            item = ItemsFactory::instance()->creatItem(ItemAndPropertyType::BranchNode);
-            nodeData.itemType = ItemAndPropertyType::BranchNode;
-            if(root)
-            {
-                m_rootItem =item;
-                root = false;
-            }
+            item = ItemsFactory::instance()->creatItem(ItemAndPropertyType::ModuleType);
+            nodeData.itemType = ItemAndPropertyType::ModuleType;
         }
-        else if(ParamNodeStr == t_str)
-        {
-            item = ItemsFactory::instance()->creatItem(ItemAndPropertyType::LeafNode);
-            nodeData.itemType = ItemAndPropertyType::LeafNode;
-        }
-        else if(TestNodeStr == t_str)
-        {
-            //!约束
-            if(m_checkedTreeData.treeType == PublicData::TreeType::TaskAnalyTree)
-            {
-                QMessageBox::information(NULL,QStringLiteral("提示"),QStringLiteral("任务分析树中不允许挂载测试节点"));
-                return;
-            }
-            item = ItemsFactory::instance()->creatItem(ItemAndPropertyType::TestNode);
-            nodeData.itemType = ItemAndPropertyType::TestNode;
-        }
-        else if(PluginNodeStr == t_str)
-        {
-            //!约束
-            if(m_checkedTreeData.treeType == PublicData::TreeType::SysDiagnoseTree)
-            {
-                QMessageBox::information(NULL,QStringLiteral("提示"),QStringLiteral("系统诊断故障树中不允许挂载插件节点"));
-                return;
-            }
-            if(m_checkedTreeData.treeType == PublicData::TreeType::TaskAnalyTree)
-            {
-                QMessageBox::information(NULL,QStringLiteral("提示"),QStringLiteral("任务分析故障树中不允许挂载插件节点"));
-                return;
-            }
-            item = ItemsFactory::instance()->creatItem(ItemAndPropertyType::PlugNode);
-            nodeData.itemType = ItemAndPropertyType::PlugNode;
-        }
-        else if(ArithmeticStr == t_str)
-        {
-            item = ItemsFactory::instance()->creatItem(ItemAndPropertyType::Arithmetic);
-            nodeData.itemType = ItemAndPropertyType::Arithmetic;
-        }
-        else if(FaultTreeDatas == t_str)
+
+        else if(ProjectTree == t_str)
         {
             //拖拽故障树
             QString treeid = QString::fromStdString(event->mimeData()->data("text/csv").toStdString());
@@ -939,9 +842,6 @@ void GraphicsScene::handleEvent()
 {
     //发送查找所有函数请求
     // GraphicsItemsHandle::getInstance()->sendFindAllFunctionReq();
-
-    connect(GraphicsItemsHandle::getInstance(),SIGNAL(signalChangeSceneMode(int)),this,SLOT(setMode(int)));
-
     //获得当前选中的故障树属性
     connect(GraphicsItemsHandle::getInstance(),&GraphicsItemsHandle::signalPitchFaultTree,this,&GraphicsScene::onSetFaultTreeData);
     //重新加载故障树节点
@@ -982,53 +882,21 @@ bool GraphicsScene::constraintNode(BaseItem *startItem, BaseItem *endItem)
     int parentChildCount = startItem->getTreeData()->getChildren().count();
     ItemAndPropertyType endItemType = endItem->getItemType();
 
-    if(startItemType == ItemAndPropertyType::BranchNode)
+    if(startItemType == ItemAndPropertyType::FrameworkType)
     {
-        if(endItemType == ItemAndPropertyType::Arithmetic && parentChildCount == 0 && endItem->getTreeData()->getParentItem() == Q_NULLPTR)
+        if(endItemType == ItemAndPropertyType::ModuleType && parentChildCount == 0 && endItem->getTreeData()->getParentItem() == Q_NULLPTR)
         {
             return true;
         }
     }
-    else if(endItemType == ItemAndPropertyType::LeafNode)
+    else if(endItemType == ItemAndPropertyType::ModuleType)
     {
-        if(startItemType == ItemAndPropertyType::Arithmetic && endItem->getTreeData()->getParentItem() == Q_NULLPTR)
+        if(startItemType == ItemAndPropertyType::FrameworkType && endItem->getTreeData()->getParentItem() == Q_NULLPTR)
         {
             return true;
         }
     }
-    else if(endItemType == ItemAndPropertyType::TestNode)
-    {
-        if(startItemType == ItemAndPropertyType::Arithmetic && endItem->getTreeData()->getParentItem() == Q_NULLPTR)
-        {
-            return true;
-        }
-    }
-    else if(endItemType == ItemAndPropertyType::PlugNode)
-    {
-        if(startItemType == ItemAndPropertyType::Arithmetic && endItem->getTreeData()->getParentItem() == Q_NULLPTR)
-        {
-            return true;
-        }
-    }
-    else if (endItemType == ItemAndPropertyType::BaseKnowledgeNode)   // 基础知识节点
-    {
-        if (startItemType == ItemAndPropertyType::Arithmetic && endItem->getTreeData()->getParentItem() == Q_NULLPTR)
-        {
-            return true;
-        }
-    }
-    else if(startItemType == ItemAndPropertyType::Arithmetic)
-    {
-        if(endItemType == ItemAndPropertyType::BranchNode && endItem->getTreeData()->getParentItem() == Q_NULLPTR)
-        {
-            for (auto child : endItem->getTreeData()->getChildren()) {
-                if (child == startItem->getTreeData()) {
-                    return false;
-                }
-            }
-            return true;
-        }
-    }
+
 
     return false;
 }

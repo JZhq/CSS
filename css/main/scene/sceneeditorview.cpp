@@ -8,6 +8,9 @@
 #include <QAction>
 #include <QTreeWidget>
 #include <projectwidget.h>
+#include <QHBoxLayout>
+#include <QEvent>
+#include <QMouseEvent>
 
 SceneEditorView::SceneEditorView(QWidget *parent) :
     QWidget(parent),
@@ -16,7 +19,9 @@ SceneEditorView::SceneEditorView(QWidget *parent) :
     m_frameTopItem(NULL),
     m_moduleTopItem(NULL),
     m_projectCustromMenu(NULL),
-    m_resourceCustroMenu(NULL)
+    m_resourceCustroMenu(NULL),
+    m_graphView(NULL),
+    m_graphScene(NULL)
 
 {
     ui->setupUi(this);
@@ -30,11 +35,13 @@ SceneEditorView::SceneEditorView(QWidget *parent) :
     ui->treeWidget_project->setHeaderLabel(u8"工程树");
     ui->treeWidget_project->setColumnCount(1);
     ui->treeWidget_project->setContextMenuPolicy(Qt::CustomContextMenu);
+    ui->treeWidget_project->installEventFilter(this);
 
     // ui->treeWidget_unit->setHeaderHidden(true);
     ui->treeWidget_unit->setHeaderLabel(u8"资源树");
     ui->treeWidget_unit->setColumnCount(1);
     ui->treeWidget_unit->setContextMenuPolicy(Qt::CustomContextMenu);
+    ui->treeWidget_unit->installEventFilter(this);
 
 
     m_frameTopItem = new QTreeWidgetItem(QStringList() << u8"框架版本");
@@ -49,6 +56,7 @@ SceneEditorView::SceneEditorView(QWidget *parent) :
     m_httpClient->moduleInfoQueryList();
 
     initCustromMenu();
+    initScene();
 }
 
 SceneEditorView::~SceneEditorView()
@@ -58,51 +66,72 @@ SceneEditorView::~SceneEditorView()
 
 void SceneEditorView::initCustromMenu()
 {
-    QVariantHash itemUserData;
     m_projectCustromMenu = new QMenu(this);
-    QList<QAction*> prjectMenus= { new QAction(u8"添加",this),  new QAction(u8"删除",this), new QAction(u8"编辑", this)};
+    QList<QAction*> prjectMenus= { new QAction(u8"添加",this),
+                                   new QAction(u8"删除",this),
+                                   new QAction(u8"编辑", this),
+                                   new QAction(u8"下载", this)};
+
     m_projectCustromMenu->addActions(prjectMenus);
-    connect(ui->treeWidget_project, &QTreeWidget::customContextMenuRequested,  [=, &itemUserData](const QPoint &pos){
+    connect(ui->treeWidget_project, &QTreeWidget::customContextMenuRequested, [=](const QPoint &pos)mutable {
+        QVariantHash itemUserData;
         auto *item = ui->treeWidget_project->itemAt(pos);
         if (item ){
-            itemUserData = item->data(0, Qt::UserRole).toHash();
             m_projectCustromMenu->exec(QCursor::pos());
+            itemUserData = item->data(0, Qt::UserRole).toHash();
         }
-    });
+        connect(m_projectCustromMenu, &QMenu::triggered, this, [=](QAction *action){
+            if (action->text() == u8"添加"){
+                ProjectWidget *project = new ProjectWidget();
+                connect(project, &ProjectWidget::addproject,  [this](const QVariantHash &d){
+                    on_addProject(d);
+                });
+            }
+            else if (action->text() == u8"删除"){
+                on_delProject(itemUserData);
+            }
+            else if (action->text() == u8"编辑"){
+                on_updateProject(itemUserData);
+            }
+            else if (action->text() == u8"下载"){
+                on_downloadProject();
+            }
+        });
 
-    connect(m_projectCustromMenu, &QMenu::triggered, this, [=](QAction *action){
-        if (action->text() == u8"添加"){
-            ProjectWidget *project = new ProjectWidget();
-            connect(project, &ProjectWidget::addproject,  [this](const QVariantHash &d){
-                on_addProject(d);
-            });
-        }
-        else if (action->text() == u8"删除"){
-            on_delProject(itemUserData);
-        }
-        else if (action->text() == u8"编辑"){
-            on_updateProject(itemUserData);
-        }
     });
 
     m_resourceCustroMenu = new QMenu(this);
     QList<QAction*> unitMenus= { new QAction(u8"查看",this),  new QAction(u8"编辑", this)};
     m_resourceCustroMenu->addActions(unitMenus);
-    connect(ui->treeWidget_unit, &QTreeWidget::customContextMenuRequested, this, [=, &itemUserData](const QPoint &pos){
+    connect(ui->treeWidget_unit, &QTreeWidget::customContextMenuRequested, [=](const QPoint &pos){
+        QVariantHash itemUserData;
         auto *item = ui->treeWidget_project->itemAt(pos);
         if (item){
-            itemUserData = item->data(0, Qt::UserRole).toHash();
             m_resourceCustroMenu->exec(QCursor::pos());
+            itemUserData = item->data(0, Qt::UserRole).toHash();
         }
+
+        connect(m_resourceCustroMenu, &QMenu::triggered, this, [=](QAction *action){
+            if (action->text() == u8"查看"){
+                on_detailResModule(itemUserData);
+            }
+            else if (action->text() == u8"编辑"){
+                on_updateResModule(itemUserData);
+            }
+        });
     });
-    connect(m_resourceCustroMenu, &QMenu::triggered, this, [=](QAction *action){
-        if (action->text() == u8"查看"){
-            on_detailResModule(itemUserData);
-        }
-        else if (action->text() == u8"编辑"){
-            on_updateResModule(itemUserData);
-        }
-    });
+}
+
+void SceneEditorView::initScene()
+{
+    m_graphView = new GraphicsView();
+    m_graphScene = new GraphicsScene();
+    m_graphView->setScene(m_graphScene);
+    //    m_graphView->setTopSuspendWidgetVisible(false);
+    //    m_graphView->setItemsOperateSuspendWidgetVisible(false);
+    QHBoxLayout *m_layout = new QHBoxLayout(this);
+    m_layout->addWidget(m_graphView);
+    ui->frame->setLayout(m_layout);
 }
 
 void SceneEditorView::on_updateProject(const QVariantHash &project)
@@ -139,18 +168,23 @@ void SceneEditorView::on_loadProjects(const QVariantList &_prjs)
 void SceneEditorView::on_delProject(const QVariantHash &_prj)
 {
     if (m_httpClient){
-
-//        QTreeWidgetItemIterator it(ui->treeWidget_project);
-//        while(*it){
-//            auto data = (*it)->data(0, Qt::UserRole).toHash();
-//            if (data == _prj){
-//                ui->treeWidget_project->removeItemWidget(*it, 0);
-//                delete (*it);
-//            }
-//            ++it;
-//        }
+        // todo: 有bug 待修改
+        //        QTreeWidgetItemIterator it(ui->treeWidget_project);
+        //        while(*it){
+        //            auto data = (*it)->data(0, Qt::UserRole).toHash();
+        //            if (data.value("projectname") == _prj.value("projectname")){
+        //                delete (*it);
+        //                break;
+        //            }
+        //            ++it;
+        //        }
         m_httpClient->deleteProject(_prj.value("projectname").toString());
     }
+}
+
+void SceneEditorView::on_downloadProject()
+{
+
 }
 
 void SceneEditorView::on_loadFrameworks(const QVariantList &_framework)
@@ -225,5 +259,35 @@ void SceneEditorView::on_result(bool state, const QString &respons)
 
 void SceneEditorView::on_dataChanged()
 {
+
+}
+
+bool SceneEditorView::eventFilter(QObject *watched, QEvent *event)
+{
+    if (watched != ui->treeWidget_project || watched != ui->treeWidget_unit )
+        return  QWidget::eventFilter(watched, event);
+    static QPoint dragPos;
+    static bool isDrag = false;
+    QMouseEvent *m_eve = static_cast<QMouseEvent *>(event);
+    if (m_eve->type() == QEvent::MouseButtonPress ){
+        if (m_eve->buttons() && Qt::LeftButton){
+            dragPos = m_eve->pos();
+            isDrag = true;
+            return true;
+        }
+    }
+    else if (m_eve->type() == QEvent::MouseButtonRelease){
+        if (m_eve->buttons() && Qt::LeftButton){
+            isDrag = false;
+            return true;
+        }
+    }
+    else if (m_eve->type() == QEvent::MouseMove){
+        if (m_eve->buttons() && Qt::LeftButton){
+
+        }
+    }
+
+    return true;
 
 }

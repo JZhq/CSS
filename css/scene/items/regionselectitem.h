@@ -16,7 +16,7 @@ class GraphicsScene;
 class RegionSelectItem: public BaseItem
 {
 public:
-    enum { Type = QGraphicsItem::UserType + LeafNode};
+    enum { Type = QGraphicsItem::UserType + ModuleType};
 
     explicit RegionSelectItem(QGraphicsItem *parent = 0);
 

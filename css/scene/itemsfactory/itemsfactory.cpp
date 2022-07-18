@@ -1,7 +1,8 @@
 ﻿#include "itemsfactory.h"
 #include "baseitem.h"
 
-#include "plugnodeitem.h"
+#include "frameworknodeitem.h"
+#include "modulenodeitem.h"
 
 ItemsFactory *ItemsFactory::m_pItemsFactory = 0;
 

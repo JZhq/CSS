@@ -12,6 +12,7 @@ CONFIG += c++11
 include(../include/global.prf)
 include(../include/util.prf)
 include(../include/public.prf)
+include(../include/scene.prf)
 include(quazip.prf)
 
 
@@ -29,7 +30,8 @@ SOURCES += \
     main.cpp \
     mainwindow.cpp \
     projectwidget.cpp \
-    scene/sceneeditorview.cpp
+    scene/sceneeditorview.cpp \
+    scene/treewidget.cpp
 
 
 HEADERS += \
@@ -45,7 +47,8 @@ HEADERS += \
     loginwidget.h \
     mainwindow.h \
     projectwidget.h \
-    scene/sceneeditorview.h
+    scene/sceneeditorview.h \
+    scene/treewidget.h
 
 FORMS += \
     configuration/cpuinfodlg.ui \

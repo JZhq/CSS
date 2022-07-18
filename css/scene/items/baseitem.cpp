@@ -170,17 +170,8 @@ void BaseItem::paint(QPainter * painter, const QStyleOptionGraphicsItem * option
 
     if(!m_nodeStatus.isEmpty())
     {
-        if(m_treeData->getNodeType() == ItemAndPropertyType::BranchNode || m_treeData->getNodeType() == ItemAndPropertyType::BaseKnowledgeNode)
-        {
-            painter->drawText(textRect,this->property("name").toString() + QString("-") + m_nodeStatus, textOption);
-        }
-
-        else
-        {
-            painter->drawText(textRect,this->property("name").toString(), textOption);
-        }
+        painter->drawText(textRect,this->property("name").toString(), textOption);
     }
-
     else
     {
         painter->drawText(textRect,this->property("name").toString(), textOption);
@@ -196,11 +187,6 @@ void BaseItem::paint(QPainter * painter, const QStyleOptionGraphicsItem * option
         painter->setBrush(Qt::NoBrush);
         painter->drawRect(boundingRect().adjusted(25, 25, -25, -25));
     }
-    //    else if(option->state & QStyle::State_Selected)
-    //    {
-
-    //    }
-
     painter->restore();
 
     //return QGraphicsObject::paint(painter,option,widget);
@@ -393,7 +379,7 @@ QVariant BaseItem::itemChange(QGraphicsItem::GraphicsItemChange change, const QV
 
 void BaseItem::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
 {
-    qDebug()<<"hoverEnterEvent";
+    // qDebug()<<"hoverEnterEvent";
     m_penWidth = 4;
     QString t_str = assembleToolTipStr();
     setToolTip(t_str);

@@ -38,11 +38,13 @@ HEADERS += \
     animation/flashengine.h \
     graphicsview.h \
     graphicsscene.h \
+    items/frameworknodeitem.h \
+    items/modulenodeitem.h \
     itemsfactory/itemsfactory.h \
     common/treedata.h \
     managescene.h \
     event/graphicsitmshandle.h \
-    items/plugnodeitem.h \
+    items/FrameworkNodeItem.h \
     items/polylineitem.h \
     suspendwidget.h \
     items/regionselectitem.h \
@@ -61,11 +63,13 @@ SOURCES += \
     graphicsview.cpp \
     animation/flashengine.cpp \
     graphicsscene.cpp \
+    items/frameworknodeitem.cpp \
+    items/modulenodeitem.cpp \
     itemsfactory/itemsfactory.cpp \
     common/treedata.cpp \
     managescene.cpp \
     event/graphicsitmshandle.cpp \
-    items/plugnodeitem.cpp \
+    items/FrameworkNodeItem.cpp \
     items/polylineitem.cpp \
     suspendwidget.cpp \
     items/regionselectitem.cpp \
