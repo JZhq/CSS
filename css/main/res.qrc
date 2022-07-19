@@ -1,0 +1,12 @@
+<RCC>
+    <qresource prefix="/">
+        <file>qss/images/line.png</file>
+        <file>qss/images/new_view.png</file>
+        <file>qss/images/openedit.png</file>
+        <file>qss/images/plugin_node.png</file>
+        <file>qss/images/save.png</file>
+        <file>qss/images/test_node.png</file>
+        <file>qss/images/project.png</file>
+        <file>qss/images/modu_node.png</file>
+    </qresource>
+</RCC>
