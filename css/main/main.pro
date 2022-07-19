@@ -30,8 +30,7 @@ SOURCES += \
     main.cpp \
     mainwindow.cpp \
     projectwidget.cpp \
-    scene/sceneeditorview.cpp \
-    scene/treewidget.cpp
+    scene/sceneeditorview.cpp
 
 
 HEADERS += \
@@ -47,8 +46,7 @@ HEADERS += \
     loginwidget.h \
     mainwindow.h \
     projectwidget.h \
-    scene/sceneeditorview.h \
-    scene/treewidget.h
+    scene/sceneeditorview.h
 
 FORMS += \
     configuration/cpuinfodlg.ui \
@@ -70,4 +68,8 @@ CONFIG(release, debug|release) {
     TARGET = demo
     DESTDIR = $$DLL_DIR_RELEASE
 }
+
+RESOURCES += \
+    res.qrc
+
 

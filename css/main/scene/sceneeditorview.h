@@ -6,6 +6,7 @@
 #include "httpclient.h"
 #include <graphicsview.h>
 #include <graphicsscene.h>
+#include <QToolBar>
 
 namespace Ui {
 class SceneEditorView;
@@ -23,6 +24,7 @@ public:
 
     void initCustromMenu();
     void initScene();
+    void initToolBar(QToolBar *bar, GraphicsScene *scene);
 
 public slots:
     void on_updateProject(const QVariantHash &_prj);
@@ -44,7 +46,6 @@ public slots:
 public:
     bool eventFilter(QObject *watched, QEvent *event);
 
-
 private:
     Ui::SceneEditorView *ui;
     QMap<QString, QTreeWidgetItem*>  m_projectTopItems;
@@ -55,7 +56,11 @@ private:
     QMenu *m_resourceCustroMenu;
     GraphicsView *m_graphView;
     GraphicsScene *m_graphScene;
+    QPoint m_dragPos;
+    QToolBar *toolBar;
 
+    QAction *m_undoAction;
+    QAction *m_redoAction;
 };
 
 #endif // SCENEEDITORVIEW_H

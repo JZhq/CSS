@@ -11,6 +11,13 @@
 #include <QHBoxLayout>
 #include <QEvent>
 #include <QMouseEvent>
+#include <QDrag>
+#include <QMimeData>
+#include <QVariantHash>
+#include <QToolButton>
+#include <QShortcut>
+#include <QUndoStack>
+#include <common/configureglobal.h>
 
 SceneEditorView::SceneEditorView(QWidget *parent) :
     QWidget(parent),
@@ -25,24 +32,25 @@ SceneEditorView::SceneEditorView(QWidget *parent) :
 
 {
     ui->setupUi(this);
-    QList<int> verticalSizes = {800, 300};
+    QList<int> verticalSizes = {900, 300};
     ui->splitter->setSizes(verticalSizes);
 
-    QList<int> horizontalSizes = {300, 800};
+    QList<int> horizontalSizes = {300, 900};
     ui->splitter_2->setSizes(horizontalSizes);
 
-    // ui->treeWidget_project->setHeaderHidden(true);
     ui->treeWidget_project->setHeaderLabel(u8"工程树");
     ui->treeWidget_project->setColumnCount(1);
     ui->treeWidget_project->setContextMenuPolicy(Qt::CustomContextMenu);
-    ui->treeWidget_project->installEventFilter(this);
 
-    // ui->treeWidget_unit->setHeaderHidden(true);
     ui->treeWidget_unit->setHeaderLabel(u8"资源树");
     ui->treeWidget_unit->setColumnCount(1);
     ui->treeWidget_unit->setContextMenuPolicy(Qt::CustomContextMenu);
-    ui->treeWidget_unit->installEventFilter(this);
+    ui->treeWidget_unit->setDragEnabled(true);
+    ui->treeWidget_unit->viewport()->installEventFilter(this);
+    installEventFilter(this);
 
+    setMouseTracking(true);
+    ui->treeWidget_unit->setMouseTracking(true);
 
     m_frameTopItem = new QTreeWidgetItem(QStringList() << u8"框架版本");
     ui->treeWidget_unit->addTopLevelItem(m_frameTopItem);
@@ -127,16 +135,65 @@ void SceneEditorView::initScene()
     m_graphView = new GraphicsView();
     m_graphScene = new GraphicsScene();
     m_graphView->setScene(m_graphScene);
-    //    m_graphView->setTopSuspendWidgetVisible(false);
-    //    m_graphView->setItemsOperateSuspendWidgetVisible(false);
-    QHBoxLayout *m_layout = new QHBoxLayout(this);
+    // m_graphScene->setMode(GraphicsScene::InsertLine);
+
+    // add by zs
+    m_undoAction = m_graphScene->getUndoStack()->createUndoAction(this, tr("&Undo"));
+    // UNDO快捷键
+    QShortcut *undoShortCut = new QShortcut(QKeySequence(Qt::CTRL + Qt::Key_Z), this);
+    QObject::connect(undoShortCut, &QShortcut::activated, this, [this] {
+        m_undoAction->trigger();
+    });
+
+    m_redoAction = m_graphScene->getUndoStack()->createRedoAction(this, tr("&Redo"));
+    // REDO快捷键
+    QShortcut *redoShortCut = new QShortcut(QKeySequence(Qt::CTRL + Qt::Key_Y), this);
+    QObject::connect(redoShortCut, &QShortcut::activated, this, [this] {
+        m_redoAction->trigger();
+    });
+
+    m_graphView->installUndoAction(m_graphScene->getUndoStack(), m_undoAction, m_redoAction);
+    m_graphView->installOperataScene(m_graphScene);
+
+    QVBoxLayout *m_layout = new QVBoxLayout(this);
+    m_layout->setSpacing(5);
+    toolBar = new QToolBar;
+    initToolBar(toolBar, m_graphScene);
+    m_layout->addWidget(toolBar);
     m_layout->addWidget(m_graphView);
     ui->frame->setLayout(m_layout);
 }
 
+void SceneEditorView::initToolBar(QToolBar *bar, GraphicsScene *scene)
+{
+    QIcon icon;
+    toolBar->addSeparator();
+    QToolButton *_line = new QToolButton(this);
+    _line->setCheckable(true);
+    _line->setToolTip(u8"连线(ALT+L)");
+    icon.addPixmap(QPixmap(":/qss/images/line.png"));
+    _line->setIcon(icon);
+    toolBar->addWidget(_line);
+    connect(_line, &QToolButton::clicked, [=](bool checked){
+         scene->setMode( checked ? GraphicsScene::InsertLine : GraphicsScene::InsertItem);
+    });
+
+    toolBar->addSeparator();
+
+    QToolButton *_save = new QToolButton(this);
+    _save->setToolTip(u8"保存(ALT+S)");
+    icon.addPixmap(QPixmap(":/qss/images/save.png"));
+    _save->setIcon(icon);
+    toolBar->addWidget(_save);
+    connect(_save, &QToolButton::clicked, [=](){
+        scene->onSaveEditTree();
+    });
+
+    toolBar->addSeparator();
+}
+
 void SceneEditorView::on_updateProject(const QVariantHash &project)
 {
-
     // m_httpClient->updateProject(project.value())
 }
 
@@ -159,6 +216,9 @@ void SceneEditorView::on_loadProjects(const QVariantList &_prjs)
             continue;
 
         QTreeWidgetItem *topItem = new QTreeWidgetItem(QStringList() << name);
+        QIcon icon;
+        icon.addPixmap(QPixmap(":/qss/images/project.png"));
+        topItem->setIcon(0, icon);
         topItem->setData(0, Qt::UserRole, _prj.toHash());
         ui->treeWidget_project->addTopLevelItem(topItem);
         m_projectTopItems[name] = topItem;
@@ -195,6 +255,9 @@ void SceneEditorView::on_loadFrameworks(const QVariantList &_framework)
             continue;
 
         QTreeWidgetItem *topItem = new QTreeWidgetItem(QStringList() << name);
+        QIcon icon;
+        icon.addPixmap(QPixmap(":/qss/images/plugin_node.png"));
+        topItem->setIcon(0, icon);
         topItem->setData(0, Qt::UserRole, fram.toHash());
         m_frameTopItem->addChild(topItem);
     }
@@ -208,6 +271,9 @@ void SceneEditorView::on_loadModules(const QVariantList &_modules)
             continue;
 
         QTreeWidgetItem *topItem = new QTreeWidgetItem(QStringList() << name);
+        QIcon icon;
+        icon.addPixmap(QPixmap(":/qss/images/modu_node.png"));
+        topItem->setIcon(0, icon);
         topItem->setData(0, Qt::UserRole, modu.toHash());
         m_moduleTopItem->addChild(topItem);
     }
@@ -264,30 +330,44 @@ void SceneEditorView::on_dataChanged()
 
 bool SceneEditorView::eventFilter(QObject *watched, QEvent *event)
 {
-    if (watched != ui->treeWidget_project || watched != ui->treeWidget_unit )
+    if ( watched != ui->treeWidget_unit->viewport() )
         return  QWidget::eventFilter(watched, event);
-    static QPoint dragPos;
-    static bool isDrag = false;
+
     QMouseEvent *m_eve = static_cast<QMouseEvent *>(event);
     if (m_eve->type() == QEvent::MouseButtonPress ){
-        if (m_eve->buttons() && Qt::LeftButton){
-            dragPos = m_eve->pos();
-            isDrag = true;
-            return true;
-        }
-    }
-    else if (m_eve->type() == QEvent::MouseButtonRelease){
-        if (m_eve->buttons() && Qt::LeftButton){
-            isDrag = false;
-            return true;
+        if (m_eve->buttons() & Qt::LeftButton){
+            m_dragPos = m_eve->pos();
         }
     }
     else if (m_eve->type() == QEvent::MouseMove){
-        if (m_eve->buttons() && Qt::LeftButton){
+        if (m_eve->buttons() & Qt::LeftButton){
+            if ((m_eve->pos() - m_dragPos).manhattanLength() < QApplication::startDragDistance())
+                return false;
 
+            QDrag *drag = new QDrag(this);
+            QMimeData *mimeData = new QMimeData;
+            QVariant itemData;
+            QTreeWidgetItem *item = ui->treeWidget_unit->currentItem();
+            if(item == nullptr)
+                return false;
+            itemData = item->data(0,Qt::UserRole);
+            if (itemData.toHash().keys().contains("name"))
+                mimeData->setText(FrameworkNode);
+            else if(itemData.toHash().keys().contains("modu_name"))
+                mimeData->setText(ModuleNode);
+            mimeData->setData("itemData", itemData.toByteArray());
+            drag->setMimeData(mimeData);
+            Qt::DropAction resultAction = drag->exec(Qt::MoveAction);
+            if(resultAction == Qt::MoveAction){
+                if(drag)
+                {
+                    delete drag;
+                    drag = NULL;
+                }
+            }
+            return true;
         }
     }
 
-    return true;
-
+    return QWidget::eventFilter(watched, event);
 }

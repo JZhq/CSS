@@ -3,6 +3,7 @@
 
 #include "frameworknodeitem.h"
 #include "modulenodeitem.h"
+#include "common/configureglobal.h"
 
 ItemsFactory *ItemsFactory::m_pItemsFactory = 0;
 
@@ -21,6 +22,12 @@ BaseItem *ItemsFactory::creatItem(int itemType)
     BaseItem *pRetItem = 0;
     switch (itemType)
     {
+    case FrameworkType:
+        pRetItem = new FrameworkNodeItem();
+        break;
+    case ModuleType:
+        pRetItem = new ModuleNodeItem();
+        break;
     default:
         break;
     }

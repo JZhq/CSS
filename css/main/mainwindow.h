@@ -27,6 +27,8 @@ public slots:
 private:
     Ui::MainWindow      *ui;
     QAction             *m_createProject = nullptr;
+//    QAction             *m_importProject = nullptr;
+//    QAction             *m_exportProject = nullptr;
 
     QAction             *m_scencConfig = nullptr;
     QAction             *m_inputConfig = nullptr;

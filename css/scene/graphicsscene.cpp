@@ -69,13 +69,11 @@ void GraphicsScene::onSaveEditTree()
                 rootItem = baseItem;
             }
 
-            //验证算法表达式
             if(baseItem->getItemType() == ItemAndPropertyType::FrameworkType)
             {
                 Json json(baseItem->getTreeData()->getItemData().nodeProperty);
                 QString t_pluginName = json.getString(QStringLiteral("插件名称"));
             }
-            // 验证描述节点
             if (baseItem->getItemType() == ItemAndPropertyType::ModuleType)
             {
                 branchCount++;
@@ -162,14 +160,10 @@ void GraphicsScene::onReloadEditTree(TreeNode *rootTreeData)
 
     //自动设置场景的区域（只适用低性能场景）
     setSceneRect(this->itemsBoundingRect());
-    //    qDebug() << "finished load all nodes:"<< time.elapsed() << "\n";
 }
 
 void GraphicsScene::onLoadDragTreeNodes(TreeNode *rootTreeData)
 {
-    qDebug()<<"onLoadDragTreeNodes";
-    //唯一区别是不清空编辑区
-
     //未加载到数据
     if(Q_NULLPTR == rootTreeData)
         return;
@@ -584,21 +578,18 @@ void GraphicsScene::dragMoveEvent(QGraphicsSceneDragDropEvent *event)
 **/
 void GraphicsScene::dropEvent(QGraphicsSceneDragDropEvent *event)
 {
-    //!插入节点
-    //!
     static bool root = false;
+    qDebug() << "dropEvent ||->" << event->mimeData()->text();
     if(m_mode == InsertItem)
     {
         BaseItem *item = Q_NULLPTR;
-        //!----------------约束性检查（第一个节点必须为描述节点）--------------------
         QList<QGraphicsItem *> items = this->items();
         if(items.count() == 0)
         {
-            QString t_str = event->mimeData()->text();
-
-            if(t_str == FrameworkNode)
+            QString mimeText = event->mimeData()->text();
+            if(mimeText == FrameworkNode)
             {
-                //event->acceptProposedAction();
+                event->acceptProposedAction();
                 root = true;
             }
             else
@@ -607,19 +598,25 @@ void GraphicsScene::dropEvent(QGraphicsSceneDragDropEvent *event)
                 return;
             }
         }
-        //!
-        //! \brief t_str
-        //!
-        QString t_str = event->mimeData()->text();
+        QString mimeText = event->mimeData()->text();
         //节点数据
         PublicData::PelItemData nodeData;
-        if(ModuleNode == t_str)
+        if(FrameworkNode == mimeText)
+        {
+            item = ItemsFactory::instance()->creatItem(ItemAndPropertyType::FrameworkType);
+            nodeData.itemType = ItemAndPropertyType::FrameworkType;
+            if(root)
+            {
+                m_rootItem = item;
+                root = false;
+            }
+        }
+        else if(ModuleNode == mimeText)
         {
             item = ItemsFactory::instance()->creatItem(ItemAndPropertyType::ModuleType);
             nodeData.itemType = ItemAndPropertyType::ModuleType;
         }
-
-        else if(ProjectTree == t_str)
+        else if(ProjectTree == mimeText)
         {
             //拖拽故障树
             QString treeid = QString::fromStdString(event->mimeData()->data("text/csv").toStdString());

@@ -25,6 +25,8 @@ MainWindow::~MainWindow()
 void MainWindow::initMenue()
 {
     m_createProject = new QAction(QIcon(), QStringLiteral("新建工程"), this);
+//    m_importProject = new QAction(QIcon(), QStringLiteral("导入工程"), this);
+//    m_exportProject = new QAction(QIcon(), QStringLiteral("导出工程"), this);
     QList<QAction*> actions = {m_createProject/*, m_openProject, m_closeProject*/};
 
     ui->menu_file->addActions(actions);
@@ -35,8 +37,8 @@ void MainWindow::initMenue()
     QList<QAction*> editActs = { m_inputConfig, m_scencConfig};
     ui->menu_edit->addActions(editActs);
 
-    m_userConfig = new QAction(QIcon(), QStringLiteral("用户信息管理"), this);
-    QList<QAction*> toolActs = {m_userConfig};
+    // m_userConfig = new QAction(QIcon(), QStringLiteral("用户信息管理"), this);
+    QList<QAction*> toolActs = {/*m_userConfig*/};
     ui->menu_tool->addActions(toolActs);
 }
 
