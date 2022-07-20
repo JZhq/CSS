@@ -27,6 +27,7 @@ int main(int argc, char *argv[])
     QObject::connect(login, &LoginWidget::loginChanged, [=](bool isLogin){
         if (isLogin){
             MainWindow *w = new MainWindow;
+            w->resize(1024, 768);
             PopupWindow::show(w, QString(), QStringLiteral("组合配置系统"), true, true, true, true, false);
         }
         login->deleteLater();

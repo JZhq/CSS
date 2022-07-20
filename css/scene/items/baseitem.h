@@ -257,6 +257,18 @@ public:
      * @param tooltip
      */
     void updateTooltip();
+
+    /**
+     * @brief 设置节点数据
+     * @param setItemData
+     */
+    void setNodeData(const QVariantHash &data);
+
+    /**
+     * @brief 获取节点数据
+     * @param nodeData
+     */
+    QVariantHash nodeData() const;
 protected:
     QVariant itemChange(GraphicsItemChange change, const QVariant &value) Q_DECL_OVERRIDE;
 
@@ -297,20 +309,21 @@ private Q_SLOTS:
     void onNameEditorChanged();
 
 protected:
-    TreeNode *m_treeData = nullptr;               //保存节点的树形结构
+    TreeNode *m_treeData = nullptr; //保存节点的树形结构
 
     QRectF m_prepareGeometry;       // geometry
     QRectF m_selectShapeRect;       // select shape rect
 
-    QList<PolyLineItem *> m_lines;      //节点所有的折线段
-    ItemStatus m_itemStatus;//图元的状态
-    QString m_varName;//变量名
+    QList<PolyLineItem *> m_lines;      // 节点所有的折线段
+    ItemStatus m_itemStatus;            // 图元的状态
+    QString m_varName;                  // 变量名
     QString m_nodeStatus;
-    qreal   m_penWidth;//画笔的宽度
+    qreal   m_penWidth;                 // 画笔的宽度
     FocusLineEdit * m_lineEdit = nullptr;
 
-    bool m_isNodeNameEditable; //可编辑名称
+    bool m_isNodeNameEditable;          // 可编辑名称
 
+    QVariantHash m_data;
 };
 
 #endif // BASEITEM_H

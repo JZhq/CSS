@@ -355,6 +355,16 @@ void BaseItem::updateTooltip()
     setToolTip(t_str);
 }
 
+void BaseItem::setNodeData(const QVariantHash &data)
+{
+    m_data = data;
+}
+
+QVariantHash BaseItem::nodeData() const
+{
+    return m_data;
+}
+
 QVariant BaseItem::itemChange(QGraphicsItem::GraphicsItemChange change, const QVariant &value)
 {
     //！改变选中的返回图元的有效区域

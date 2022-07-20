@@ -207,8 +207,15 @@ void GraphicsScene::onLoadDragTreeNodes(TreeNode *rootTreeData)
 void GraphicsScene::onDeleteTreeNode()
 {
     CommonData::isTreeEdited = true;
-    removeItemsWithUndo(this->selectedItems());
-    //自动设置场景的区域（只适用低性能场景）
+    QList<QGraphicsItem *> items = this->selectedItems();
+    for(auto item : items){
+        BaseItem *baseItem = static_cast<BaseItem*>(item);
+        if (baseItem){
+            QVariantHash d = baseItem->nodeData();
+            emit itemChanged(d, DeleteItem);
+        }
+    }
+    removeItemsWithUndo(items);
     setSceneRect(this->itemsBoundingRect());
 
 }
@@ -223,9 +230,7 @@ void GraphicsScene::onCopyTreeNode()
         node = dynamic_cast<BaseItem *>(item);
         if(Q_NULLPTR != node)
         {
-            //获取该节点的数据域
             PublicData::PelItemData itemData = node->getTreeData()->getItemData();
-
             m_copyNodeDatas.append(itemData);
         }
     }
@@ -241,7 +246,6 @@ void GraphicsScene::onClearEditView()
     m_regionSelItem = Q_NULLPTR;
     this->clear();
     m_undostak->clear();
-    qDebug() << "current undostack size:" << m_undostak->count();
 }
 
 void GraphicsScene::onSetNodesProperty(const QVariantHash& hash)
@@ -271,7 +275,6 @@ void GraphicsScene::onSetNodesProperty(const QVariantHash& hash)
 
 void GraphicsScene::onDrawItemName(const QString &id, const QString &name)
 {
-    qDebug()<<"onDrawItemName";
     //按照id找到界面上的图元
     QList<QGraphicsItem *> listItems = this->items();
     foreach (QGraphicsItem *item, listItems) {
@@ -290,8 +293,6 @@ void GraphicsScene::onDrawItemName(const QString &id, const QString &name)
 
 void GraphicsScene::onDrawItemVarName(const QString &id, const QString &varName)
 {
-    qDebug()<<"onDrawItemVarName";
-
     QList<QGraphicsItem *> listItems = this->items();
     foreach (QGraphicsItem *item, listItems) {
         BaseItem *baseItem = dynamic_cast<BaseItem *>(item);
@@ -465,8 +466,6 @@ void GraphicsScene::mouseReleaseEvent(QGraphicsSceneMouseEvent *mouseEvent)
     }
 
     // 移动图元
-    //    if (m_selectedPointCount != 0 && m_mode == InsertItem && m_curItem) {
-    //       if (m_curItem->pos() != m_oldMovePos ) {
     if (m_selectedPointCount != 0 && m_mode == InsertItem) {
         if (m_curItem&&m_curItem->pos() != m_oldMovePos ) {
             QPointF movedPos = m_curItem->pos() - m_oldMovePos;
@@ -474,13 +473,10 @@ void GraphicsScene::mouseReleaseEvent(QGraphicsSceneMouseEvent *mouseEvent)
             QList<QGraphicsItem *> allSelItems = selectedItems().isEmpty() ? (QList<QGraphicsItem *>() << m_curItem) : selectedItems();
             for (auto item : allSelItems) {
                 allItems.append(item);
-                //                for (auto polyline : qgraphicsitem_cast<BaseItem*>(item)->getAllPolyLine()) {
-                //                    allItems.append(polyline);
-                //                }
             }
             moveItemsWithUndo(allItems, movedPos);
-            qDebug() << "selected item count : " << m_selectedPointCount << "old point: " << m_oldMovePos
-                     << "move: " << m_curItem->pos() - m_oldMovePos;
+//            qDebug() << "selected item count : " << m_selectedPointCount << "old point: " << m_oldMovePos
+//                     << "move: " << m_curItem->pos() - m_oldMovePos;
             m_selectedPointCount = 0;
         }
     }
@@ -508,19 +504,7 @@ void GraphicsScene::mouseReleaseEvent(QGraphicsSceneMouseEvent *mouseEvent)
             {
                 PolyLineItem *polyLine = new PolyLineItem(startItem, endItem);
                 polyLine->setColor(Qt::black);
-
-                //                startItem->addPolyLine(polyLine);
-                //                endItem->addPolyLine(polyLine);
-
-                //                //设置节点的父子关系
-                //                endItem->getTreeData()->setParentItem(startItem->getTreeData());
-                //                startItem->getTreeData()->appendChild(endItem->getTreeData());
-
-                //添加折线
-                // addItem(polyLine);
                 addItemsWithUndo(QList<QGraphicsObject*>() << polyLine);
-                //                //更新折线位置
-                //                polyLine->updatePosition();
             }
             else
             {
@@ -579,7 +563,6 @@ void GraphicsScene::dragMoveEvent(QGraphicsSceneDragDropEvent *event)
 void GraphicsScene::dropEvent(QGraphicsSceneDragDropEvent *event)
 {
     static bool root = false;
-    qDebug() << "dropEvent ||->" << event->mimeData()->text();
     if(m_mode == InsertItem)
     {
         BaseItem *item = Q_NULLPTR;
@@ -599,12 +582,16 @@ void GraphicsScene::dropEvent(QGraphicsSceneDragDropEvent *event)
             }
         }
         QString mimeText = event->mimeData()->text();
+        QVariantHash mimeData = event->mimeData()->imageData().toHash();
+        QString nodeName;
         //节点数据
         PublicData::PelItemData nodeData;
         if(FrameworkNode == mimeText)
         {
             item = ItemsFactory::instance()->creatItem(ItemAndPropertyType::FrameworkType);
+            item->setNodeData(mimeData);
             nodeData.itemType = ItemAndPropertyType::FrameworkType;
+            nodeName = mimeData.value("name").toString();
             if(root)
             {
                 m_rootItem = item;
@@ -614,7 +601,9 @@ void GraphicsScene::dropEvent(QGraphicsSceneDragDropEvent *event)
         else if(ModuleNode == mimeText)
         {
             item = ItemsFactory::instance()->creatItem(ItemAndPropertyType::ModuleType);
+            item->setNodeData(mimeData);
             nodeData.itemType = ItemAndPropertyType::ModuleType;
+            nodeName = mimeData.value("modu_name").toString();
         }
         else if(ProjectTree == mimeText)
         {
@@ -649,19 +638,14 @@ void GraphicsScene::dropEvent(QGraphicsSceneDragDropEvent *event)
         QString strId = QUuid::createUuid().toString();
         nodeData.id = strId;
 
-        //获取在场景坐标系中的坐标
         QPointF point = event->scenePos();
-        //设置节点位置
         item->setPos(point);
-        //addItem(item);
         addItemsWithUndo(QList<QGraphicsObject*>() << item);
-        //设置节点的数据域
         item->setTreeData(nodeData);
-        //设置图元初始化名称
-        item->setProperty("name","itemName");
-        //让属性模块添加属性
+        item->setProperty("name", nodeName );
         CommonData::isTreeEdited = true;
-        GraphicsItemsHandle::getInstance()->sendAddItemProperty(strId, nodeData.itemType, m_checkedTreeData.treeType);
+        // GraphicsItemsHandle::getInstance()->sendAddItemProperty(strId, nodeData.itemType, m_checkedTreeData.treeType);
+        emit itemChanged(mimeData, AddItem);
 
         event->acceptProposedAction();
     }
@@ -745,35 +729,23 @@ void GraphicsScene::reloadChildrenTreeData(BaseItem *itemParent, QList<TreeNode 
 
         if(item == NULL)
             continue;
-        //设置节点位置
         item->setPos(itemData.pos);
-
-        //添加图元到场景中
         addItem(item);
-        //连接删除槽
         connect(item, &BaseItem::signalDelNode, this, &GraphicsScene::onDeleteTreeNode, Qt::UniqueConnection);
-        //连接复制槽
         connect(item, &BaseItem::signalCopyNode, this, &GraphicsScene::onCopyTreeNode, Qt::UniqueConnection);
 
-        //设置节点的数据域
         item->setTreeData(itemData);
-
-        //添加连线(需要开始节点和结束节点)
         PolyLineItem *polyLine = new PolyLineItem(itemParent, item);
         polyLine->setColor(Qt::black);
 
         itemParent->addPolyLine(polyLine);
         item->addPolyLine(polyLine);
 
-        //添加到场景中
         addItem(polyLine);
-        //更新位置信息
         polyLine->updatePosition();
-        //设置节点之间的关系
         item->getTreeData()->setParentItem(itemParent->getTreeData());
         itemParent->getTreeData()->appendChild(item->getTreeData());
 
-        //回调
         reloadChildrenTreeData(item,treeData->getChildren());
     }
 }
@@ -783,27 +755,18 @@ void GraphicsScene::loadDragChildrenTreeData(BaseItem *itemParent, QList<TreeNod
     TreeNode *treeData;
     PublicData::PelItemData itemData;
     foreach (treeData, listTreeData) {
-        //子节点
         itemData = treeData->getItemData();
         BaseItem *item = ItemsFactory::instance()->creatItem(itemData.itemType);
 
         if(item == NULL)
             continue;
 
-        //更新所属树的id
         itemData.treeId = m_checkedTreeData.id;
-        //调整树节点的位置
-
         itemData.pos += adjustPointF;
 
-
-        //设置节点位置
         item->setPos(itemData.pos);
 
-        //添加图元到场景中
-        // addItem(item);
         items.append(item);
-        //连接删除槽
         connect(item, &BaseItem::signalDelNode, this, &GraphicsScene::onDeleteTreeNode, Qt::UniqueConnection);
         //连接复制槽
         connect(item, &BaseItem::signalCopyNode, this, &GraphicsScene::onCopyTreeNode, Qt::UniqueConnection);
@@ -837,8 +800,6 @@ void GraphicsScene::loadDragChildrenTreeData(BaseItem *itemParent, QList<TreeNod
 
 void GraphicsScene::handleEvent()
 {
-    //发送查找所有函数请求
-    // GraphicsItemsHandle::getInstance()->sendFindAllFunctionReq();
     //获得当前选中的故障树属性
     connect(GraphicsItemsHandle::getInstance(),&GraphicsItemsHandle::signalPitchFaultTree,this,&GraphicsScene::onSetFaultTreeData);
     //重新加载故障树节点
@@ -876,12 +837,11 @@ bool GraphicsScene::constraintNode(BaseItem *startItem, BaseItem *endItem)
         return false;
 
     ItemAndPropertyType startItemType = startItem->getItemType();
-    int parentChildCount = startItem->getTreeData()->getChildren().count();
     ItemAndPropertyType endItemType = endItem->getItemType();
 
     if(startItemType == ItemAndPropertyType::FrameworkType)
     {
-        if(endItemType == ItemAndPropertyType::ModuleType && parentChildCount == 0 && endItem->getTreeData()->getParentItem() == Q_NULLPTR)
+        if(endItemType == ItemAndPropertyType::ModuleType && endItem->getTreeData()->getParentItem() == Q_NULLPTR )
         {
             return true;
         }

@@ -29,16 +29,21 @@ public:
 public slots:
     void on_updateProject(const QVariantHash &_prj);
     void on_addProject(const QVariantHash &_prj);
+    void on_setProjectFramwork(const QVariantHash &fram, int opt = 0);
+    void on_setProjectModule(const QVariantHash &modu, int opt = 0);
     void on_loadProjects(const QVariantList &_prjs);
     void on_delProject(const QVariantHash &_prj);
     void on_downloadProject();
 
     void on_loadFrameworks(const QVariantList &_framework);
     void on_loadModules(const QVariantList &_modules);
+    void on_loadCpuInfos(const QVariantList &_cpus);
+    void on_loadSystemInfos(const QVariantList &_syss);
     void on_updateResModule(const QVariantHash &_d);
     void on_detailResModule(const QVariantHash &_d);
 
     void on_result(bool state, const QString& respons);
+    void on_downResult(bool state, const QString& respons);
 
     void on_dataChanged();
 
@@ -50,8 +55,6 @@ private:
     Ui::SceneEditorView *ui;
     QMap<QString, QTreeWidgetItem*>  m_projectTopItems;
     HttpClient *m_httpClient;
-    QTreeWidgetItem *m_frameTopItem;
-    QTreeWidgetItem *m_moduleTopItem;
     QMenu *m_projectCustromMenu;
     QMenu *m_resourceCustroMenu;
     GraphicsView *m_graphView;
@@ -61,6 +64,9 @@ private:
 
     QAction *m_undoAction;
     QAction *m_redoAction;
+
+    QTreeWidgetItem *m_curSelectItme;
+    QString m_downProjectDir;
 };
 
 #endif // SCENEEDITORVIEW_H

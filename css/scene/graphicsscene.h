@@ -36,8 +36,8 @@ class SCENE_SHARED_EXPORT GraphicsScene : public QGraphicsScene
 
 public:
     enum Mode { InsertItem, InsertLine, NotEdit };
-
     enum EditMode{ FaultEdit,  BaseKnowEdit };
+    enum ItemEdit{ AddItem, DeleteItem, UpdateItem};
     explicit GraphicsScene(QObject *parent = Q_NULLPTR);
 
     int getFaultTreeType() const
@@ -49,7 +49,8 @@ public:
     {
         return m_undostak;
     }
-
+signals:
+    void itemChanged(const QVariantHash&, int);
 public slots:
     /**
      * @brief setMode
