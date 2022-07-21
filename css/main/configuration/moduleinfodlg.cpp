@@ -11,6 +11,19 @@ ModuleInfoDlg::ModuleInfoDlg(QWidget *parent, QVariantHash d, EditorMode m) :
     ui(new Ui::ModuleInfoDlg)
 {
     ui->setupUi(this);
+    ui->comboBox_type->addItems(QStringList() << "0" << "1");
+    if (m==Update){
+         m_oldHash = d;
+         m_oldName = d.value("modu_name").toString();
+         m_oldVer = d.value("ver").toString();
+         ui->lineEdit_name->setText(d.value("modu_name").toString());
+         ui->lineEdit_version->setText(d.value("ver").toString());
+         ui->comboBox_sys_version->setCurrentText(d.value("systemver").toString());
+         ui->comboBox_sys_name->setCurrentText(d.value("systemname").toString());
+         ui->comboBox_cpu->setCurrentText(d.value("cpuname").toString());
+         ui->comboBox_type->setCurrentText(d.value("type").toString());
+    }
+
     if (m_httpClient){
         m_httpClient->cpuConfigQueryList();
         m_httpClient->opSystemConfigQueryList();
@@ -64,7 +77,11 @@ void ModuleInfoDlg::on_result(bool state, const QString &respons)
                                        {"cpuname", ui->comboBox_cpu->currentText()},
                                        {"type", ui->comboBox_type->currentText()},
                                        {"fileName", ui->lineEdit_res->text()}};
-                emit addModuleInfo(cpuHash);
+                if (m_mode == New)
+                    emit addModuleInfo(cpuHash);
+                if (m_mode == Update)
+                    emit editorDataUpdated(cpuHash);
+
                 emit editorDataChanged();
             }
         }
@@ -90,8 +107,10 @@ void ModuleInfoDlg::on_pushButton_confirm_clicked()
     if (!compressDir(fileName, dir)){
         qDebug() << "compressDir failed" << fileName;
     }
-
-    m_httpClient->moduleInfoAdd(name, version, sys_name, sys_verion, cpu, type.toInt(), fileName);
+    if (m_mode == New)
+        m_httpClient->moduleInfoAdd(name, version, sys_name, sys_verion, cpu, type.toInt(), fileName);
+    if (m_mode == Update)
+        m_httpClient->moduleInfoUpdate(m_oldName, m_oldVer, name, version, sys_name, sys_verion, cpu, type.toInt(), fileName);
 }
 
 

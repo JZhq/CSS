@@ -24,6 +24,7 @@ signals:
 
 private:
     Ui::CpuInfoDlg *ui;
+    QString m_oldName;
 };
 
 #endif // CPUINFODLG_H

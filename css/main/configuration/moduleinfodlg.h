@@ -26,6 +26,9 @@ signals:
 
 private:
     Ui::ModuleInfoDlg *ui;
+    QString m_oldName;
+    QString m_oldVer;
+    QVariantHash m_oldHash;
 };
 
 #endif // MODULEINFODLG_H

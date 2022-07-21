@@ -49,7 +49,7 @@ void InputEditor::on_result(bool state, const QString &respons)
         if (parseError.error == QJsonParseError::NoError) {
             isLogin = doc.object().value("result").toBool();
             auto resultSet = doc.object().value("resultset").toVariant().toList();
-            if (isLogin){
+            if (isLogin && (m_mode==New || m_mode==Update)){
                 // qDebug() << respons << resultSet.size();
                 QList<QVariantHash> _hashs;
                 for(auto set: resultSet){
@@ -76,6 +76,7 @@ InputEditor::InputEditor(QWidget *parent, QVariantHash d, EditorMode m) :
     ui->tableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 
     connect(ui->pushButton_add, &QPushButton::clicked, this, [=](){
+        m_mode = New;
         if (m_editorEm == System_Editor){
             SystemInfoDlg *_sysDlg = new SystemInfoDlg(this);
             connect(_sysDlg, &SystemInfoDlg::addSystemInfo, this, [=](const QVariantHash &hash){
@@ -108,28 +109,70 @@ InputEditor::InputEditor(QWidget *parent, QVariantHash d, EditorMode m) :
 
     connect(ui->pushButton_del, &QPushButton::clicked, this, [=](){
         // 删除module 选中数据
+        m_mode = Delete;
+        auto curIndx = ui->tableView->selectionModel()->currentIndex();
+        int row = curIndx.row();
+        if (row < 0) return;
+        QVariantHash _selectRowData = m_model->rowData(row);
+        QMessageBox::StandardButton infoButton = QMessageBox::information(this,u8"提示", u8"请确认是否删除选择行");
+        if (infoButton == QMessageBox::Cancel)
+            return;
+
+        if (m_editorEm == System_Editor){
+            m_httpClient->opSystemConfigDelete(_selectRowData.value("systemname").toString(), _selectRowData.value("systemver").toString());
+            m_model->removeRows(row, 1, curIndx.parent());
+        }
+        else if (m_editorEm == Cpu_Editor){
+            m_httpClient->cpuConfigDelete(_selectRowData.value("cpuname").toString());
+            m_model->removeRows(row, 1, curIndx.parent());
+        }
+        else if (m_editorEm == Framework_Editor){
+            m_httpClient->frameworkInfoDelete(_selectRowData.value("name").toString(), _selectRowData.value("ver").toString());
+            m_model->removeRows(row, 1, curIndx.parent());
+        }
+        else if (m_editorEm == Mudule_Editor){
+            m_httpClient->moduleInfoDelete(_selectRowData.value("modu_name").toString(), _selectRowData.value("ver").toString());
+            m_model->removeRows(row, 1, curIndx.parent());
+        }
+
     });
 
     connect(ui->pushButton_edit, &QPushButton::clicked, this, [=](){
         // 编辑module 选中数据
+        m_mode = Update;
+        auto curIndx = ui->tableView->selectionModel()->currentIndex();
+        int row = curIndx.row();
+        QVariantHash _selectRowData = m_model->rowData(row);
         if (m_editorEm == System_Editor){
-            SystemInfoDlg *_sysDlg = new SystemInfoDlg(this);
+            SystemInfoDlg *_sysDlg = new SystemInfoDlg(this, _selectRowData, EditorMode::Update);
+            connect(_sysDlg, &SystemInfoDlg::editorDataUpdated, [=](const QVariantHash &d){
+                m_model->updateRowData(curIndx, d);
+            });
             connect(_sysDlg, &SystemInfoDlg::editorDataChanged, this, &InputEditor::editorDataChanged);
             PopupWindow::exec(_sysDlg, QStringLiteral("系统版本信息编辑"), false, false, false);
         }
         else if (m_editorEm == Cpu_Editor){
-            CpuInfoDlg *_cpuDlg = new CpuInfoDlg(this);
+            CpuInfoDlg *_cpuDlg = new CpuInfoDlg(this, _selectRowData, EditorMode::Update);
             connect(_cpuDlg, &CpuInfoDlg::editorDataChanged, this, &InputEditor::editorDataChanged);
+            connect(_cpuDlg, &CpuInfoDlg::editorDataUpdated, [=](const QVariantHash &d){
+                m_model->updateRowData(curIndx, d);
+            });
             PopupWindow::exec(_cpuDlg, QStringLiteral("CPU信息编辑"), false, false, false);
         }
         else if (m_editorEm == Framework_Editor){
-            FrameworkInfoDlg *_frameDlg = new FrameworkInfoDlg(this);
+            FrameworkInfoDlg *_frameDlg = new FrameworkInfoDlg(this, _selectRowData, EditorMode::Update);
             connect(_frameDlg, &FrameworkInfoDlg::editorDataChanged, this, &InputEditor::editorDataChanged);
+            connect(_frameDlg, &FrameworkInfoDlg::editorDataUpdated, [=](const QVariantHash &d){
+                m_model->updateRowData(curIndx, d);
+            });
             PopupWindow::exec(_frameDlg, QStringLiteral("框架信息编辑"), false, false, false);
         }
         else if (m_editorEm == Mudule_Editor){
-            ModuleInfoDlg *_moduleDlg = new ModuleInfoDlg(this);
+            ModuleInfoDlg *_moduleDlg = new ModuleInfoDlg(this, _selectRowData, EditorMode::Update);
             connect(_moduleDlg, &ModuleInfoDlg::editorDataChanged, this, &InputEditor::editorDataChanged);
+            connect(_moduleDlg, &ModuleInfoDlg::editorDataUpdated, [=](const QVariantHash &d){
+                m_model->updateRowData(curIndx, d);
+            });
             PopupWindow::exec(_moduleDlg, QStringLiteral("模块信息编辑"), false, false, false);
         }
     });

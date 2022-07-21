@@ -10,6 +10,11 @@ CpuInfoDlg::CpuInfoDlg(QWidget *parent, QVariantHash d, EditorMode m)
       ui(new Ui::CpuInfoDlg)
 {
     ui->setupUi(this);
+    if (m == Update){
+        m_oldName = d.value("cpuname").toString();
+        ui->lineEdit_cpu->setText(d.value("cpuname").toString());
+        ui->lineEdit_desc->setText(d.value("cpudesc").toString());
+    }
 }
 
 CpuInfoDlg::~CpuInfoDlg()
@@ -30,7 +35,10 @@ void CpuInfoDlg::on_result(bool state, const QString &respons)
                 QVariantHash cpuHash= {{"cpuname", ui->lineEdit_cpu->text()},
                                        {"cpudesc", ui->lineEdit_desc->text()}};
                 qDebug() << cpuHash;
-                emit addCpuInfo(cpuHash);
+                if (m_mode == New)
+                    emit addCpuInfo(cpuHash);
+                if (m_mode == Update)
+                    emit editorDataUpdated(cpuHash);
                 emit editorDataChanged();
             }
         }
@@ -44,7 +52,10 @@ void CpuInfoDlg::on_pushButton_confirm_clicked()
 {
     QString cpuInfo = ui->lineEdit_cpu->text();
     QString decInfo = ui->lineEdit_desc->text();
-    m_httpClient->cpuConfigAdd(cpuInfo,  decInfo);
+    if (m_mode == New)
+        m_httpClient->cpuConfigAdd(cpuInfo,  decInfo);
+    if (m_mode == Update)
+        m_httpClient->cpuConfigUpdate(m_oldName, cpuInfo, decInfo);
 }
 
 

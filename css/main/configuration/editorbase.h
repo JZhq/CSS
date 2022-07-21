@@ -26,6 +26,8 @@ public:
 
 signals:
     void editorDataChanged();
+    void editorDataUpdated(const QVariantHash &);
+    void editorDataDelete(const QVariantHash &);
 
 public slots:
     virtual void on_result(bool state, const QString& respons);

@@ -27,6 +27,8 @@ private slots:
 private:
     Ui::FrameworkInfoDlg    *ui;
     QStringList             m_resourDirs;
+    QString m_oldName;
+    QString m_oldVer;
 };
 
 #endif // FRAMEWORKINFODLG_H

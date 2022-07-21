@@ -30,6 +30,7 @@ public:
 
     static const QMap<QString, EditorEm> m_tabEditors;
     static const QMap<EditorEm, QList<QPair<QString, QString> >> m_editorHeaders;
+
 private:
     Ui::InputEditor *ui;
     EditorEm        m_editorEm;

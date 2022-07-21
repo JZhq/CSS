@@ -65,6 +65,7 @@ signals:
 
 public slots:
     void updateData(const QList<QVariantHash> &data);
+    void updateRowData(const QModelIndex &index, const QVariantHash &d);
     void updateHeaderData(const QList<QPair<QString, QString> > &data);
     void setHeaderData(const QPair<QString, QString> &data);
     void appendData(const QVariantHash &data);

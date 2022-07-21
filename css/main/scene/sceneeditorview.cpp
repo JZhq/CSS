@@ -302,6 +302,7 @@ void SceneEditorView::on_downloadProject()
             auto framItem = m_curSelectItme->child(i);
             QVariantHash framData = framItem->data(0, Qt::UserRole).toHash();
             if (framData.keys().contains("name")){
+                qDebug() << "filename :::::: " <<framData.value("filename").toString();
                 downHttp->frameworkInfoDownload(framData.value("filename").toString(), m_downProjectDir);
             }
 
@@ -386,7 +387,7 @@ void SceneEditorView::on_loadModules(const QVariantList &_modules)
             }
 
             if (!moduleChildren.isEmpty()){
-                   QTreeWidgetItem *item = new QTreeWidgetItem(QStringList() << u8"基础模块");
+                   QTreeWidgetItem *item = new QTreeWidgetItem(QStringList() << u8"模块");
                    item->addChildren(moduleChildren);
                    sysItem->addChild(item);
             }

@@ -14,6 +14,17 @@ FrameworkInfoDlg::FrameworkInfoDlg(QWidget *parent, QVariantHash d, EditorMode m
     ui->setupUi(this);
     m_httpClient->cpuConfigQueryList();
     m_httpClient->opSystemConfigQueryList();
+    ui->comboBox_type->addItems(QStringList() << "0" << "1");
+    if (m == Update){
+        m_oldName = d.value("name").toString();
+        m_oldVer = d.value("ver").toString();
+        ui->lineEdit_name->setText(d.value("name").toString());
+        ui->lineEdit_version->setText(d.value("ver").toString());
+        ui->comboBox_sys_version->setCurrentText(d.value("systemver").toString());
+        ui->comboBox_sys_name->setCurrentText(d.value("systemname").toString());
+        ui->comboBox_cpu->setCurrentText(d.value("cpuname").toString());
+        ui->comboBox_type->setCurrentText(d.value("type").toString());
+    }
 }
 
 FrameworkInfoDlg::~FrameworkInfoDlg()
@@ -40,8 +51,10 @@ void FrameworkInfoDlg::on_pushButton_confirm_clicked()
     if (!compressDir(fileName, dir)){
         qDebug() << "compressDir failed" << fileName;
     }
-
-    m_httpClient->frameworkInfoAdd(name, verison, sys_version, sys_name, cpu, type.toInt(), fileName);
+    if (m_mode == New)
+        m_httpClient->frameworkInfoAdd(name, verison, sys_version, sys_name, cpu, type.toInt(), fileName);
+    if (m_mode == Update)
+        m_httpClient->frameworkInfoUpdate(m_oldName, m_oldVer, name, verison, sys_name, sys_version, cpu, type.toInt(), fileName);
 }
 
 
@@ -92,13 +105,16 @@ void FrameworkInfoDlg::on_result(bool state, const QString &respons)
             }
             if (isLogin && !hash.contains("count")){
                 QVariantHash frameHash= {{"name",        ui->lineEdit_name->text()},
-                                        {"ver",      ui->lineEdit_version->text()},
-                                        {"systemver",  ui->comboBox_sys_version->currentText()},
-                                        {"systemname",     ui->comboBox_sys_name->currentText()},
-                                        {"cpuname",          ui->comboBox_cpu->currentText()},
+                                        {"ver",          ui->lineEdit_version->text()},
+                                        {"systemver",    ui->comboBox_sys_version->currentText()},
+                                        {"systemname",   ui->comboBox_sys_name->currentText()},
+                                        {"cpuname",      ui->comboBox_cpu->currentText()},
                                         {"type",         ui->comboBox_type->currentText()},
                                         {"fileName",     ui->lineEdit_res->text()}};
-                emit addFrameworkInfoSignal(frameHash);
+                if (m_mode == New)
+                    emit addFrameworkInfoSignal(frameHash);
+                if (m_mode == Update)
+                    emit editorDataUpdated(frameHash);
                 emit editorDataChanged();
             }
         }

@@ -23,6 +23,7 @@ signals:
 
 private:
     Ui::systemInfoDlg *ui;
+    QString m_oldCpuName;
 };
 
 #endif // systemInfoDlg_H

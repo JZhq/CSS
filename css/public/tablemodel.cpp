@@ -268,6 +268,16 @@ void TableModel::updateData(const QList<QVariantHash> &data)
     emit itemAdded(0, rowCount());
 }
 
+void TableModel::updateRowData(const QModelIndex &index, const QVariantHash &d)
+{
+    int row = index.row();
+    if (!m_data.isEmpty() && m_data.size() > row){
+        beginResetModel();
+        m_data[row] = d;
+        endResetModel();
+    }
+}
+
 void TableModel::updateHeaderData(const QList<QPair<QString, QString> > &data)
 {
     beginResetModel();
