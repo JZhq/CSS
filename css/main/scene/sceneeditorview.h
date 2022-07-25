@@ -47,6 +47,8 @@ public slots:
 
     void on_dataChanged();
 
+    void on_appendLog(const QString &log, int level);
+
     // QObject interface
 public:
     bool eventFilter(QObject *watched, QEvent *event);

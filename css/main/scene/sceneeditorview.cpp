@@ -21,6 +21,7 @@
 #include <common/configureglobal.h>
 #include <QTimer>
 #include <QFileDialog>
+#include "configurationglobal.h"
 
 SceneEditorView::SceneEditorView(QWidget *parent) :
     QWidget(parent),
@@ -54,7 +55,7 @@ SceneEditorView::SceneEditorView(QWidget *parent) :
     setMouseTracking(true);
     ui->treeWidget_unit->setMouseTracking(true);
 
-    m_httpClient = new HttpClient("127.0.0.1", 8080, this, SLOT(on_result(bool, const QString&)));
+    m_httpClient = new HttpClient(ConfigGlobalInterface->serverAddr(), 8080, this, SLOT(on_result(bool, const QString&)));
     m_httpClient->queryProjectList();
     m_httpClient->cpuConfigQueryList();
     QTimer::singleShot(50, [=](){
@@ -66,7 +67,7 @@ SceneEditorView::SceneEditorView(QWidget *parent) :
     QTimer::singleShot(200, [=](){
         m_httpClient->moduleInfoQueryList();
     });
-
+    on_appendLog(u8"加载模块列表", 0);
     initCustromMenu();
     initScene();
 }
@@ -295,14 +296,14 @@ void SceneEditorView::on_downloadProject()
         return;
     }
     if (m_curSelectItme){
-        HttpClient *downHttp = new HttpClient("127.0.0.1", 8080, this, SLOT(on_downResult(bool, const QString&)));
+        HttpClient *downHttp = new HttpClient(ConfigGlobalInterface->serverAddr(), 8080, this, SLOT(on_downResult(bool, const QString&)));
 
         int count = m_curSelectItme->childCount();
         for(int i=0; i<count; i++){
             auto framItem = m_curSelectItme->child(i);
             QVariantHash framData = framItem->data(0, Qt::UserRole).toHash();
             if (framData.keys().contains("name")){
-                qDebug() << "filename :::::: " <<framData.value("filename").toString();
+                // qDebug() << "filename :::::: " <<framData.value("filename").toString();
                 downHttp->frameworkInfoDownload(framData.value("filename").toString(), m_downProjectDir);
             }
 
@@ -341,6 +342,8 @@ void SceneEditorView::on_loadFrameworks(const QVariantList &_framework)
                 if (dataHash.value("cpuname").toString() == _cpu && dataHash.value("systemname").toString() ==_sys){
                     QString type = (dataHash.value("type").toInt() == 1) ? u8"动态库": u8"源码" ;
                     QString name = QString("%1(%2)").arg(fram.toHash().value("name").toString()).arg(type);
+                    QString version = dataHash.value("systemver").toString();
+
                     QTreeWidgetItem *item = new QTreeWidgetItem(QStringList() << name);
                     QIcon icon;
                     icon.addPixmap(QPixmap(":/qss/images/plugin_node.png"));
@@ -469,6 +472,13 @@ void SceneEditorView::on_result(bool state, const QString &respons)
 void SceneEditorView::on_dataChanged()
 {
 
+}
+
+void SceneEditorView::on_appendLog(const QString &log, int level)
+{
+    QString time = QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss");
+    QString logInfo = QString("[%1] %2 \r\n").arg(time).arg(log);
+    ui->logBrowser->append(logInfo);
 }
 
 bool SceneEditorView::eventFilter(QObject *watched, QEvent *event)

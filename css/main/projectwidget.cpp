@@ -5,6 +5,7 @@
 #include <QJsonParseError>
 #include <QJsonObject>
 #include <QMessageBox>
+#include "configurationglobal.h"
 
 ProjectWidget::ProjectWidget(EditMode m, QWidget *parent) :
     QWidget(parent),
@@ -12,7 +13,7 @@ ProjectWidget::ProjectWidget(EditMode m, QWidget *parent) :
     m_httpClient(NULL)
 {
     ui->setupUi(this);
-    m_httpClient = new HttpClient("127.0.0.1", 8080, this, SLOT(on_loginResult(bool, const QString&)));
+    m_httpClient = new HttpClient(ConfigGlobalInterface->serverAddr(), 8080, this, SLOT(on_loginResult(bool, const QString&)));
 }
 
 ProjectWidget::~ProjectWidget()

@@ -5,6 +5,7 @@ SUBDIRS += \
     util \
     public \
     scene \
+    propertybrowser \
     main
 
 

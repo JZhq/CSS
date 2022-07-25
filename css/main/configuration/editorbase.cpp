@@ -2,6 +2,7 @@
 #include <QDebug>
 #include <QFile>
 #include "quazip/JlCompress.h"
+#include "configurationglobal.h"
 
 EditorBase::EditorBase(QWidget *parent, QVariantHash d, EditorMode m)
     :
@@ -10,7 +11,7 @@ EditorBase::EditorBase(QWidget *parent, QVariantHash d, EditorMode m)
       m_mode(m),
       m_httpClient(NULL)
 {
-    m_httpClient = new HttpClient("127.0.0.1", 8080);
+    m_httpClient = new HttpClient(ConfigGlobalInterface->serverAddr(), 8080);
     connect(m_httpClient, &HttpClient::emitData, this, &EditorBase::on_result);
 }
 

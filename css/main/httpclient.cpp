@@ -16,8 +16,7 @@ HttpClient::HttpClient(const QString &ip, int port, QObject *reciver, const char
     , m_manager(new QNetworkAccessManager)
 {
     connect(m_manager.data(), &QNetworkAccessManager::finished, this, &HttpClient::replyFinished);
-    if (reciver && slot)
-        connect(this, SIGNAL(emitData(bool, QString)), reciver, slot);
+    connect(this, SIGNAL(emitData(bool, QString)), reciver, slot);
 }
 
 void HttpClient::userLogin(const QString &user, const QString &password)
@@ -173,7 +172,7 @@ void HttpClient::frameworkInfoQueryList()
 
 void HttpClient::frameworkInfoDelete(const QString &name, const QString &ver)
 {
-    QString url = QString("http://%1:%2/frameworkinfo/delete?name=%3&ver=%3")
+    QString url = QString("http://%1:%2/frameworkinfo/delete?name=%3&ver=%4")
             .arg(m_ip).arg(m_port).arg(name).arg(ver);
     m_manager->get(QNetworkRequest(QUrl(url)));
 }
@@ -413,7 +412,7 @@ void HttpClient::moduleInfoQueryList()
 
 void HttpClient::moduleInfoDelete(const QString &name, const QString &ver)
 {
-    QString url = QString("http://%1:%2/moduleinfo/delete?modu_name=%3&ver=%3")
+    QString url = QString("http://%1:%2/moduleinfo/delete?modu_name=%3&ver=%4")
             .arg(m_ip).arg(m_port).arg(name).arg(ver);
     m_manager->get(QNetworkRequest(QUrl(url)));
 }

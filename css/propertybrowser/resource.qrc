@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/propertybrowser">
+        <file>zh_CN.qm</file>
+        <file>qt_missed_zh_CN.qm</file>
+    </qresource>
+</RCC>

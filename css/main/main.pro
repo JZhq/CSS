@@ -25,6 +25,7 @@ SOURCES += \
     configuration/inputinfowidget.cpp \
     configuration/moduleinfodlg.cpp \
     configuration/systeminfodlg.cpp \
+    configurationglobal.cpp \
     httpclient.cpp \
     loginwidget.cpp \
     main.cpp \
@@ -42,11 +43,13 @@ HEADERS += \
     configuration/inputinfowidget.h \
     configuration/moduleinfodlg.h \
     configuration/systeminfodlg.h \
+    configurationglobal.h \
     httpclient.h \
     loginwidget.h \
     mainwindow.h \
     projectwidget.h \
-    scene/sceneeditorview.h
+    scene/sceneeditorview.h \
+    singleton.h
 
 FORMS += \
     configuration/cpuinfodlg.ui \

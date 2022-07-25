@@ -6,6 +6,7 @@
 #include <json.h>
 #include <QJsonDocument>
 #include <QJsonParseError>
+#include "configurationglobal.h"
 
 
 LoginWidget::LoginWidget(QWidget *parent) :
@@ -14,7 +15,7 @@ LoginWidget::LoginWidget(QWidget *parent) :
     m_httpClient(NULL)
 {
     ui->setupUi(this);
-    m_httpClient = new HttpClient("127.0.0.1", 8080, this, SLOT(on_loginResult(bool, const QString&)));
+    m_httpClient = new HttpClient(ConfigGlobalInterface->serverAddr(), 8080, this, SLOT(on_loginResult(bool, const QString&)));
 }
 
 LoginWidget::~LoginWidget()
@@ -30,7 +31,7 @@ void LoginWidget::on_pushButton_confirm_clicked()
     QCryptographicHash md(QCryptographicHash::Md5);
     QByteArray _data = pwd.toLatin1();
     md.addData(_data, _data.size());
-    qDebug() << md.result().toHex();
+    //  qDebug() << md.result().toHex();
     m_httpClient->userLogin(user, md.result().toHex());
 }
 

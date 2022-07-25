@@ -4,8 +4,7 @@
 
 SuspendWidget::SuspendWidget(QWidget *parent):QWidget(parent),
                m_zoomInBtn(Q_NULLPTR),
-               m_zoomOutBtn(Q_NULLPTR),
-               m_printBtn(Q_NULLPTR)
+               m_zoomOutBtn(Q_NULLPTR)
 {
     setWindowFlags(Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
     //设置背景透明
@@ -45,15 +44,15 @@ void SuspendWidget::initUi()
     m_zoomInBtn->setMinimumSize(QSize(40,40));
     m_zoomInBtn->setAutoRaise(true);
 
-    //快照
-    m_printBtn = new QToolButton(this);
-    layout->addWidget(m_printBtn);
-    pix.load(":/resources/camera_n.png");
-    icon.addPixmap(pix);
-    m_printBtn->setIcon(icon);
-    m_printBtn->setIconSize(QSize(32,32));
-    m_printBtn->setMinimumSize(QSize(40,40));
-    m_printBtn->setAutoRaise(true);
+//    //快照
+//    m_printBtn = new QToolButton(this);
+//    layout->addWidget(m_printBtn);
+//    pix.load(":/resources/camera_n.png");
+//    icon.addPixmap(pix);
+//    m_printBtn->setIcon(icon);
+//    m_printBtn->setIconSize(QSize(32,32));
+//    m_printBtn->setMinimumSize(QSize(40,40));
+//    m_printBtn->setAutoRaise(true);
     this->setLayout(layout);
 }
 
@@ -63,6 +62,6 @@ void SuspendWidget::handleEvents()
 
     connect(m_zoomInBtn,&QToolButton::clicked,this,&SuspendWidget::signalZoomIn);
 
-    connect(m_printBtn,&QToolButton::clicked,this,&SuspendWidget::signalPrintScene);
+    // connect(m_printBtn,&QToolButton::clicked,this,&SuspendWidget::signalPrintScene);
 
 }

@@ -29,8 +29,8 @@ private:
     QToolButton *m_zoomOutBtn;
     //放大按钮
     QToolButton *m_zoomInBtn;
-    //快照
-    QToolButton *m_printBtn;
+//    //快照
+//    QToolButton *m_printBtn;
 };
 
 #endif // SUSPENDWIDGET_H
